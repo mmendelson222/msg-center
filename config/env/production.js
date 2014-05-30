@@ -2,6 +2,8 @@
 
 module.exports = {
 	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://msg_center_user:asdf0987@ds053158.mongolab.com:53158/heroku_app25632828',
+    /*
+    something in here made the app fail (blank screen) in heroku
 	assets: {
 		lib: {
 			css: [
@@ -22,7 +24,7 @@ module.exports = {
 		},
 		css: 'public/dist/application.min.css',
 		js: 'public/dist/application.min.js'
-	},
+	},*/
 	facebook: {
 		clientID: process.env.FACEBOOK_ID || 'APP_ID',
 		clientSecret: process.env.FACEBOOK_SECRET || 'APP_SECRET',
