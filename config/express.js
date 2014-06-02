@@ -120,11 +120,18 @@ module.exports = function(db) {
 		if (!err) return next();
 
 		// Log it
-		console.error(err.stack);
+        var errorMsg;
+        if (typeof(err.stack) === 'undefined') {
+            errorMsg = err;
+        } else {
+            errorMsg = err.stack;
+        }
+
+        console.error(errorMsg);
 
 		// Error page
 		res.status(500).render('500', {
-			error: err.stack
+			error: errorMsg
 		});
 	});
 
