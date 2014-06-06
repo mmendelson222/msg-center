@@ -8,6 +8,6 @@ var twilio = require('twilio'),
 
 module.exports = function() {
     function sayHello() {
-        console.log("hello there.");
+        console.log('hello there.');
     }
 }

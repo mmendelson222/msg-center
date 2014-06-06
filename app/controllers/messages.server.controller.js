@@ -22,24 +22,27 @@ var twilioConfig = {
 /**
  * Create a Message
  */
+exports.receive = function(req, res) {
+
+    console.log('\nTwilio service request received: '+req.url);
+    var resp = new twilio.TwimlResponse();
+    //var twilio_client = new twilio.RestClient();
+
+    var text = req.body.Body;
+    var reversed = text.split('').reverse().join('') + '...' + req.body.From;
+
+    resp.sms(reversed);
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(resp.toString());
+
+};
+
+/**
+ * Create a Message
+ */
 exports.send = function(req, res) {
 
     var message = new Message(req.body);
-
-    //var message = req.message;
-    //message = _.extend(message, req.body);
-
-    /*
-    message.save(function(err) {
-        if (err) {
-            return res.send(400, {
-                message: getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(article);
-        }
-    });*/
-
 
     // Pass in parameters to the REST API using an object literal notation. The
     // REST client will handle authentication and response serialzation for you.

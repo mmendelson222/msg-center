@@ -116,20 +116,7 @@ module.exports = function(db) {
 		require(path.resolve(routePath))(app);
 	});
 
-    app.post(/^\/service\/twilio.*$/i, function (req, res) {
-        console.log('\nTwilio service request received: '+req.url);
-        var resp = new twilio.TwimlResponse();
-        var twilio_client = new twilio.RestClient();
-
-        var text = req.body.Body;
-        var reversed = text.split("").reverse().join("") + " " + req.body.From;
-
-        resp.sms(reversed);
-        res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(resp.toString());
-    });
-
-	// Assume 'not found' in the error msgs is a 404. this is somewhat silly, but valid, you can do whatever you like, set properties, use instanceof etc.
+  	// Assume 'not found' in the error msgs is a 404. this is somewhat silly, but valid, you can do whatever you like, set properties, use instanceof etc.
 	app.use(function(err, req, res, next) {
 		// If the error object doesn't exists
 		if (!err) return next();
