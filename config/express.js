@@ -20,6 +20,8 @@ var express = require('express'),
 	consolidate = require('consolidate'),
 	path = require('path');
 
+var twilio = require('twilio');
+
 module.exports = function(db) {
 	// Initialize express app
 	var app = express();
@@ -114,6 +116,14 @@ module.exports = function(db) {
 		require(path.resolve(routePath))(app);
 	});
 
+    app.get(/^\/service\/twilio.*$/i, function (req, res) {
+        console.log('\nTwilio service request received: '+req.url);
+        var resp = new twilio.TwimlResponse();
+        resp.sms('hi');
+        res.writeHead(200, { "Content-Type": "text/html" });
+        res.end(resp.toString());
+    });
+
 	// Assume 'not found' in the error msgs is a 404. this is somewhat silly, but valid, you can do whatever you like, set properties, use instanceof etc.
 	app.use(function(err, req, res, next) {
 		// If the error object doesn't exists
@@ -142,6 +152,8 @@ module.exports = function(db) {
 			error: 'Not Found'
 		});
 	});
+
+
 
 	return app;
 };
