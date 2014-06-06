@@ -119,7 +119,11 @@ module.exports = function(db) {
     app.get(/^\/service\/twilio.*$/i, function (req, res) {
         console.log('\nTwilio service request received: '+req.url);
         var resp = new twilio.TwimlResponse();
-        resp.sms('hi');
+
+        var text = req.Body;
+        var reversed = text.split("").reverse().join("");
+
+        resp.sms(reversed);
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(resp.toString());
     });
