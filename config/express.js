@@ -116,12 +116,13 @@ module.exports = function(db) {
 		require(path.resolve(routePath))(app);
 	});
 
-    app.get(/^\/service\/twilio.*$/i, function (req, res) {
+    app.post(/^\/service\/twilio.*$/i, function (req, res) {
         console.log('\nTwilio service request received: '+req.url);
         var resp = new twilio.TwimlResponse();
+        var twilio_client = new twilio.RestClient();
 
-        var text = req.Body;
-        var reversed = text.split("").reverse().join("");
+        var text = req.body.Body;
+        var reversed = text.split("").reverse().join("") + " " + req.body.From;
 
         resp.sms(reversed);
         res.writeHead(200, { "Content-Type": "text/html" });
