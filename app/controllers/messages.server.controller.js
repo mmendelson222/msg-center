@@ -95,5 +95,21 @@ exports.delete = function(req, res) {
  * List of Messages
  */
 exports.list = function(req, res) {
-
+    var mockMessges = [
+        {
+            "created": "2014-05-29T02:36:19.308Z",
+            "text":"This is a fake text message.",
+            "user":{
+                "displayName": "Bill Clinton"
+            }
+        },
+        {
+            "created": "2014-05-30T10:36:19.308Z",
+            "text":"This text message is from a mock.",
+            "user":{
+                "displayName": "Barak Obama"
+            }
+        }
+        ];
+    res.jsonp(mockMessges);
 };
