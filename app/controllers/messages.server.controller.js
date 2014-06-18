@@ -38,7 +38,7 @@ exports.receive = function(req, res) {
 };
 
 /**
- * Create a Message
+ * Outoing Message
  */
 exports.send = function(req, res) {
 
