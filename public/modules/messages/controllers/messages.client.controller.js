@@ -14,5 +14,9 @@ angular.module('messages').controller('MessagesController', ['$scope', 'Messages
 
             this.text = '';
         };
+
+        $scope.find = function() {
+            $scope.messages = Messages.query();
+        };
 	}
 ]);
