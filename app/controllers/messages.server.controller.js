@@ -28,7 +28,7 @@ var helpInfo = {
 exports.parseMessage = function(text) {
     var a = text.split(' ');
     var command = a[0].toUpperCase();
-    if (a.length < 2 ||  command == 'HELP'){
+    if (a.length < 2 ||  command === 'HELP'){
         return helpInfo;
     }
 
@@ -76,7 +76,7 @@ exports.receive = function(req, res) {
 
     var text = req.body.Body;
 
-    var parsed = parseMessage(text);
+    var parsed = exports.parseMessage(text);
 
     //var reversed = text.split('').reverse().join('') + '...' + req.body.From;
 
@@ -88,7 +88,7 @@ exports.receive = function(req, res) {
     });
     message.save();
 
-    resp.sms(reversed);
+    resp.sms(message.response);
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(resp.toString());
 };
