@@ -26,9 +26,13 @@ var MessageSchema = new Schema({
         type: Boolean,
         required: 'outgoing cannot be blank'
     },
-    //for outgoing messages only
+    //for incoming messages only - what was the response?
     response: {
         type: String
+    },
+    //for outgoing messages only - which logged in user sent the message?  Pared down user object.
+    sender: {
+
     },
     created: {
         type: Date,

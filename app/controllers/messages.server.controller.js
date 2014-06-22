@@ -42,7 +42,6 @@ exports.receive = function(req, res) {
     resp.sms(reversed);
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(resp.toString());
-
 };
 
 /**
@@ -51,12 +50,17 @@ exports.receive = function(req, res) {
 exports.send = function(req, res) {
 
     var sendTo = '3037154487',
-        sentFrom = '7203167666';
+        sentFrom = '7203167666',
+        user = req.user;
 
     var message = new Message({
         'text': req.body.text,
         'number': sendTo,
-        'outgoing': true
+        'outgoing': true,
+        'sender': {
+            'displayName':user.displayName,
+            'username':user.username
+        }
     });
     message.save();
 
@@ -142,7 +146,8 @@ exports.delete = function(req, res) {
  * List of Messages
  */
 exports.list = function(req, res) {
-    Message.find().sort('created').exec(function(err, messages) {
+    //newest on top
+    Message.find().sort({'created':-1}).exec(function(err, messages) {
         if (err) {
             return res.send(400, {
                 message: getErrorMessage(err)

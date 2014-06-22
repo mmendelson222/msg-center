@@ -13,13 +13,13 @@
                 <span ng-switch="msg.outgoing">
                     <small class="list-group-item-text" ng-switch-when="true">
                         Sent
-                        <span data-ng-bind="msg.created | date:'mediumDate'"></span>
+                        <span data-ng-bind="msg.created | date:'medium'"></span>
                         by
-                        <span data-ng-bind="msg.user"></span>
+                        <span data-ng-bind="msg.sender.displayName"></span>
                     </small>
                     <small class="list-group-item-text" ng-switch-default>
                         Received
-                        <span data-ng-bind="msg.created | date:'mediumDate'"></span>
+                        <span data-ng-bind="msg.created | date:'medium'"></span>
                         from
                         <span data-ng-bind="msg.number"></span>
                     </small>

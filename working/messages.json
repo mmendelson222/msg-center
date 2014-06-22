@@ -1,2 +1,3 @@
-{'created': '2014-05-29T02:36:19.308Z', 'text':'This is a fake text message!', 'number':'1111111', 'outgoing': true, 'user': 'Bill Clinton' }
+{'created': '2014-06-21T02:36:19.308Z', 'text':'This is a fake text message!', 'number':'1111111', 'outgoing': true,  "sender" : {"username" : "mmendelson","displayName" : "Michael Mendelson"}}
+{'created': '2014-05-29T02:36:19.308Z', 'text':'This message is for testing purposes', 'number':'2222222', 'outgoing': true,  "sender" : {"username" : "mmendelson","displayName" : "Bill Clinton"}}
 {'created': '2014-05-30T10:36:19.308Z', 'text':'This text message is from an import!', 'number':'1111111', 'outgoing':false, 'response':'this is the response message' }
