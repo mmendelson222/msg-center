@@ -49,6 +49,11 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 			$scope.articles = Articles.query();
 		};
 
+        $scope.assertLoggedIn = function() {
+            if (!$scope.authentication.user)
+                $location.path('signin');
+        };
+
 		$scope.findOne = function() {
 			$scope.article = Articles.get({
 				articleId: $stateParams.articleId
