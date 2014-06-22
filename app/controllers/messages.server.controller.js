@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
     Message = mongoose.model('Message'),
+    Syndicate = mongoose.model('Syndicate'),
     _ = require('lodash');
 
 // Load the twilio module
@@ -19,6 +20,51 @@ var twilioConfig = {
     number : 'TWILIO_NUMBER'
 };
 
+var helpInfo = {
+    'action':'help',
+    'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
+};
+
+exports.parseMessage = function(text) {
+    var a = text.split(' ');
+    var command = a[0].toUpperCase();
+    if (a.length < 2 ||  command == 'HELP'){
+        return helpInfo;
+    }
+
+    switch (command) {
+        case 'START':
+            return {
+                'action': 'start ' + a[1],
+                'message': 'You have subscribed to ' + a[1] + ' messages.'
+            };
+        case 'STOP':
+            return {
+                'action': 'stop '+a[1],
+                'message': 'You have unsubscribed.  To resubscribe text START '+a[1]+' to this number'
+            };
+        default:
+            return {
+                'action': 'error '+a[1],
+                'message': 'I don\'t know what to do with that command.  '+helpInfo.message
+            };
+    }
+
+/*
+    Syndicate.findOne({'syndicate': }).sort('-created').populate('user', 'displayName').exec(function(err, syndicates) {
+        if (err) {
+            return res.send(400, {
+                message: getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(syndicates);
+        }
+    });
+*/
+
+
+};
+
 /**
  * Create a Message
  */
@@ -29,13 +75,16 @@ exports.receive = function(req, res) {
     //var twilio_client = new twilio.RestClient();
 
     var text = req.body.Body;
-    var reversed = text.split('').reverse().join('') + '...' + req.body.From;
+
+    var parsed = parseMessage(text);
+
+    //var reversed = text.split('').reverse().join('') + '...' + req.body.From;
 
     var message = new Message({
         'text': req.body.Body,
         'number': req.body.From,
         'outgoing': false,
-        'response':reversed
+        'response':parsed.message
     });
     message.save();
 
@@ -73,7 +122,7 @@ exports.send = function(req, res) {
     }, function(error, messageInfo) {
         // The HTTP request to Twilio will run asynchronously. This callback
         // function will be called when a response is received from Twilio
-        // The "error" variable will contain error information, if any.
+        // The 'error" variable will contain error information, if any.
         // If the request was successful, this value will be "falsy"
         if (!error) {
             // The second argument to the callback will contain the information
