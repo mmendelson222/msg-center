@@ -31,6 +31,14 @@ exports.receive = function(req, res) {
     var text = req.body.Body;
     var reversed = text.split('').reverse().join('') + '...' + req.body.From;
 
+    var message = new Message({
+        'text': req.body.Body,
+        'number': req.body.From,
+        'outgoing': false,
+        'response':reversed
+    });
+    message.save();
+
     resp.sms(reversed);
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end(resp.toString());
@@ -42,13 +50,21 @@ exports.receive = function(req, res) {
  */
 exports.send = function(req, res) {
 
-    var message = new Message(req.body);
+    var sendTo = '3037154487',
+        sentFrom = '7203167666';
+
+    var message = new Message({
+        'text': req.body.text,
+        'number': sendTo,
+        'outgoing': true
+    });
+    message.save();
 
     // Pass in parameters to the REST API using an object literal notation. The
     // REST client will handle authentication and response serialzation for you.
     twilio_client.sms.messages.create({
-        to:'3037154487',
-        from:'7203167666',
+        to: sendTo,
+        from: sentFrom,
         body:message.text
     }, function(error, messageInfo) {
         // The HTTP request to Twilio will run asynchronously. This callback
@@ -69,6 +85,37 @@ exports.send = function(req, res) {
         }
     });
 };
+
+/**
+ * Get the error message from error object
+ */
+var getErrorMessage = function(err) {
+    var message = '';
+    if (err.code) {
+        switch (err.code) {
+            case 11000:
+            case 11001:
+                message = 'Message already exists';
+                break;
+            default:
+                message = 'Something went wrong';
+        }
+    } else {
+        for (var errName in err.errors) {
+            if (err.errors[errName].message) message = err.errors[errName].message;
+        }
+    }
+    return message;
+};
+
+/**
+ * Save an Message
+
+exports.save = function(req, res) {
+console.log("saving");
+    console.dir("xsaving");
+}; */
+
 
 /**
  * Show the current Message
@@ -95,21 +142,13 @@ exports.delete = function(req, res) {
  * List of Messages
  */
 exports.list = function(req, res) {
-    var mockMessges = [
-        {
-            "created": "2014-05-29T02:36:19.308Z",
-            "text":"This is a fake text message.",
-            "user":{
-                "displayName": "Bill Clinton"
-            }
-        },
-        {
-            "created": "2014-05-30T10:36:19.308Z",
-            "text":"This text message is from a mock.",
-            "user":{
-                "displayName": "Barak Obama"
-            }
+    Message.find().sort('created').exec(function(err, messages) {
+        if (err) {
+            return res.send(400, {
+                message: getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(messages);
         }
-        ];
-    res.jsonp(mockMessges);
+    });
 };

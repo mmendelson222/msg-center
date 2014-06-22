@@ -12,4 +12,4 @@ module.exports = function() {
     function sayHello() {
         console.log('hello there.');
     }
-}
+};
