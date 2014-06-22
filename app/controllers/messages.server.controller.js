@@ -31,38 +31,38 @@ exports.parseMessage = function(text) {
     if (a.length < 2 ||  command === 'HELP'){
         return helpInfo;
     }
+    var target = a[1].toUpperCase();
+
+    var syndicate = Syndicate.findOne(target);
 
     switch (command) {
         case 'START':
-            return {
-                'action': 'start ' + a[1],
-                'message': 'You have subscribed to ' + a[1] + ' messages.'
-            };
+            if (syndicate) {
+                return {
+                    'action': 'start ' + target,
+                    'message': 'You have subscribed to ' + target + ' messages.'
+                };
+            }
+            break;
         case 'STOP':
-            return {
-                'action': 'stop '+a[1],
-                'message': 'You have unsubscribed.  To resubscribe text START '+a[1]+' to this number'
-            };
+            if (syndicate) {
+                return {
+                    'action': 'stop ' + target,
+                    'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                };
+            }
+            break;
         default:
             return {
-                'action': 'error '+a[1],
+                'action': 'error '+target,
                 'message': 'I don\'t know what to do with that command.  '+helpInfo.message
             };
     }
 
-/*
-    Syndicate.findOne({'syndicate': }).sort('-created').populate('user', 'displayName').exec(function(err, syndicates) {
-        if (err) {
-            return res.send(400, {
-                message: getErrorMessage(err)
-            });
-        } else {
-            res.jsonp(syndicates);
-        }
-    });
-*/
-
-
+    return {
+        'action': 'error ',
+        'message': 'Group '+target+' does not exist.'
+    };
 };
 
 /**
