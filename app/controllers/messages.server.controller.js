@@ -25,7 +25,7 @@ var helpInfo = {
     'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
 };
 
-exports.parseMessage = function(text) {
+exports.parseMessage = function(text, callback) {
     var a = text.split(' ');
     var command = a[0].toUpperCase();
     if (a.length < 2 ||  command === 'HELP'){
@@ -33,36 +33,35 @@ exports.parseMessage = function(text) {
     }
     var target = a[1].toUpperCase();
 
-    var syndicate = Syndicate.findOne(target);
-
-    switch (command) {
-        case 'START':
-            if (syndicate) {
-                return {
-                    'action': 'start ' + target,
-                    'message': 'You have subscribed to ' + target + ' messages.'
-                };
-            }
-            break;
-        case 'STOP':
-            if (syndicate) {
-                return {
-                    'action': 'stop ' + target,
-                    'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
-                };
-            }
-            break;
-        default:
-            return {
-                'action': 'error '+target,
-                'message': 'I don\'t know what to do with that command.  '+helpInfo.message
-            };
-    }
-
-    return {
-        'action': 'error ',
-        'message': 'Group '+target+' does not exist.'
-    };
+    Syndicate.findOne(target, function(syndicate){
+        switch (command) {
+            case 'START':
+                if (syndicate) {
+                    callback ({
+                        'action': 'start ' + target,
+                        'message': 'You have subscribed to ' + target + ' messages.'
+                    });
+                }
+                break;
+            case 'STOP':
+                if (syndicate) {
+                    callback({
+                        'action': 'stop ' + target,
+                        'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                    });
+                }
+                break;
+            default:
+                callback({
+                    'action': 'error '+target,
+                    'message': 'I don\'t know what to do with that command.  '+helpInfo.message
+                });
+        }
+        callback({
+            'action': 'error ',
+            'message': 'Group '+target+' does not exist.'
+        });
+    });
 };
 
 /**
@@ -72,25 +71,20 @@ exports.receive = function(req, res) {
 
     console.log('\nTwilio service request received: '+req.url);
     var resp = new twilio.TwimlResponse();
-    //var twilio_client = new twilio.RestClient();
-
     var text = req.body.Body;
+    exports.parseMessage(text, function(parsed){
+        var message = new Message({
+            'text': req.body.Body,
+            'number': req.body.From,
+            'outgoing': false,
+            'response':parsed.message
+        });
+        message.save();
 
-    var parsed = exports.parseMessage(text);
-
-    //var reversed = text.split('').reverse().join('') + '...' + req.body.From;
-
-    var message = new Message({
-        'text': req.body.Body,
-        'number': req.body.From,
-        'outgoing': false,
-        'response':parsed.message
+        resp.sms(message.response);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(resp.toString());
     });
-    message.save();
-
-    resp.sms(message.response);
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(resp.toString());
 };
 
 /**
