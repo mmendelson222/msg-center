@@ -14,50 +14,46 @@ exports.parseMessage = function(text, callback) {
         'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
     };
 
-    if (!text) {
-        callback({'action': 'error','message': 'Text is empty'});
-        return;
-    }
+    if (!text)
+        return callback({'action': 'error','message': 'Text is empty'});
 
     var a = text.split(' ');
     var command = a[0].toUpperCase();
-    if (a.length < 2 ||  command === 'HELP'){
+    if (a.length < 2 ||  command === 'HELP')
         return callback(helpInfo);
-    }
+
     var target = a[1].toUpperCase();
 
     Syndicate.findOne({'name':target}, function(err, syndicate){
-        if (syndicate) {
-            switch (command) {
-                case 'START':
-                    if (syndicate) {
-                        callback({
-                            'action': 'start ' + target,
-                            'message': 'You have subscribed to ' + target + ' messages.'
-                        });
-                    }
-                    break;
-                case 'STOP':
-                    if (syndicate) {
-                        callback({
-                            'action': 'stop ' + target,
-                            'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
-                        });
-                    }
-                    break;
-                default:
-                    callback({
-                        'action': 'error ' + target,
-                        'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
+        switch (command) {
+            case 'START':
+                if (syndicate) {
+                    return callback({
+                        'action': 'start ' + target,
+                        'message': 'You have subscribed to ' + target + ' messages.'
                     });
-                    break;
-            }
-        } else {
-            callback({
-                'action': 'error ',
-                'message': 'Group '+target+' does not exist.'
-            });
+                }
+                break;
+            case 'STOP':
+                if (syndicate) {
+                    return callback({
+                        'action': 'stop ' + target,
+                        'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                    });
+                }
+                break;
+            default:
+                return callback({
+                    'action': 'error ' + target,
+                    'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
+                });
         }
+
+        //fallthrough - unknown command.
+        callback({
+            'action': 'error ',
+            'message': 'Group '+target+' does not exist.'
+        });
     });
 };
 
