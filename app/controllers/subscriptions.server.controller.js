@@ -24,7 +24,8 @@ exports.parseMessage = function(text, callback) {
 
     var target = a[1].toUpperCase();
 
-    Syndicate.findOne({'name':target}, function(err, syndicate){
+    var syndicate = new Syndicate();
+    syndicate.findOne({'name':target}, function(err, syndicate){
         switch (command) {
             case 'START':
                 if (syndicate) {

@@ -35,7 +35,7 @@ exports.receive = function(req, res) {
             'response':parsed.message
         });
         message.save();
-        
+
         resp.sms(message.response);
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(resp.toString());
