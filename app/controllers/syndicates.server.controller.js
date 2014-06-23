@@ -107,20 +107,6 @@ exports.list = function(req, res) { Syndicate.find().sort('-created').populate('
 };
 
 /**
- * Get named Syndicate
- */
-exports.findOne = function(name, callback) { Syndicate.findOne({'name':name}, function(err, doc) {
-        if (err) throw err;
-        if (!doc) {
-            console.dir('Syndicate '+name+' not found.');
-            callback(null);
-        }
-        console.log(doc);
-        callback(doc);
-    });
-};
-
-/**
  * Syndicate middleware
  */
 exports.syndicateByID = function(req, res, next, id) { Syndicate.findById(id).populate('user', 'displayName').exec(function(err, syndicate) {

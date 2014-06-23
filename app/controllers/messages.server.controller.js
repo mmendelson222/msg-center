@@ -33,34 +33,38 @@ exports.parseMessage = function(text, callback) {
     }
     var target = a[1].toUpperCase();
 
-    Syndicate.findOne(target, function(syndicate){
-        switch (command) {
-            case 'START':
-                if (syndicate) {
-                    callback ({
-                        'action': 'start ' + target,
-                        'message': 'You have subscribed to ' + target + ' messages.'
-                    });
-                }
-                break;
-            case 'STOP':
-                if (syndicate) {
+    Syndicate.findOne({'name':target}, function(err, syndicate){
+        if (syndicate) {
+            switch (command) {
+                case 'START':
+                    if (syndicate) {
+                        callback({
+                            'action': 'start ' + target,
+                            'message': 'You have subscribed to ' + target + ' messages.'
+                        });
+                    }
+                    break;
+                case 'STOP':
+                    if (syndicate) {
+                        callback({
+                            'action': 'stop ' + target,
+                            'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                        });
+                    }
+                    break;
+                default:
                     callback({
-                        'action': 'stop ' + target,
-                        'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                        'action': 'error ' + target,
+                        'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
                     });
-                }
-                break;
-            default:
-                callback({
-                    'action': 'error '+target,
-                    'message': 'I don\'t know what to do with that command.  '+helpInfo.message
-                });
+                    break;
+            }
+        } else {
+            callback({
+                'action': 'error ',
+                'message': 'Group '+target+' does not exist.'
+            });
         }
-        callback({
-            'action': 'error ',
-            'message': 'Group '+target+' does not exist.'
-        });
     });
 };
 
@@ -86,6 +90,18 @@ exports.receive = function(req, res) {
         res.end(resp.toString());
     });
 };
+
+//test
+exports.subscribe = function(req, res) {
+    exports.parseMessage(req.body.text, function(parsed){
+        if (parsed) {
+            console.dir(parsed);
+            res.jsonp(parsed);
+        } else
+            res.send(400, {'message': 'server error'});
+    });
+};
+
 
 /**
  * Outoing Message
