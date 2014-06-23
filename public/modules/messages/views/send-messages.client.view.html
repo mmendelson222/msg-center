@@ -18,7 +18,7 @@
                     <strong data-ng-bind="result.message"></strong>
                 </div>
                 <div data-ng-show="error" class="text-danger">
-                    <strong data-ng-bind="error"></strong>
+                    <strong>{{error | json}}</strong>
                 </div>
             </fieldset>
         </form>

@@ -9,12 +9,12 @@ angular.module('subscriptions').controller('SubscriptionsController', ['$scope',
 		$scope.create = function() {
 			// Create new Subscription object
 			var subscription = new Subscriptions ({
-				name: this.name
+				text: this.text
 			});
 
 			// Redirect after save
 			subscription.$save(function(response) {
-				$location.path('subscriptions/' + response._id);
+				$scope.result = response;
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});

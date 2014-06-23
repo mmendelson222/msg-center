@@ -5,7 +5,61 @@
  */
 var mongoose = require('mongoose'),
 	Subscription = mongoose.model('Subscription'),
+    Syndicate = mongoose.model('Syndicate'),
 	_ = require('lodash');
+
+exports.parseMessage = function(text, callback) {
+    var helpInfo = {
+        'action':'help',
+        'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
+    };
+
+    if (!text) {
+        callback({'action': 'error','message': 'Text is empty'});
+        return;
+    }
+
+    var a = text.split(' ');
+    var command = a[0].toUpperCase();
+    if (a.length < 2 ||  command === 'HELP'){
+        return callback(helpInfo);
+    }
+    var target = a[1].toUpperCase();
+
+    Syndicate.findOne({'name':target}, function(err, syndicate){
+        if (syndicate) {
+            switch (command) {
+                case 'START':
+                    if (syndicate) {
+                        callback({
+                            'action': 'start ' + target,
+                            'message': 'You have subscribed to ' + target + ' messages.'
+                        });
+                    }
+                    break;
+                case 'STOP':
+                    if (syndicate) {
+                        callback({
+                            'action': 'stop ' + target,
+                            'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                        });
+                    }
+                    break;
+                default:
+                    callback({
+                        'action': 'error ' + target,
+                        'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
+                    });
+                    break;
+            }
+        } else {
+            callback({
+                'action': 'error ',
+                'message': 'Group '+target+' does not exist.'
+            });
+        }
+    });
+};
 
 /**
  * Get the error message from error object
@@ -38,7 +92,16 @@ exports.create = function(req, res) {
 	var subscription = new Subscription(req.body);
 	subscription.user = req.user;
 
-	subscription.save(function(err) {
+    exports.parseMessage(req.body.text, function(parsed){
+        if (parsed) {
+            console.dir(parsed);
+            res.jsonp(parsed);
+        } else
+            res.send(400, {'message': 'server error'});
+    });
+
+    /*
+    subscription.save(function(err) {
 		if (err) {
 			return res.send(400, {
 				message: getErrorMessage(err)
@@ -47,7 +110,10 @@ exports.create = function(req, res) {
 			res.jsonp(subscription);
 		}
 	});
+	*/
 };
+
+
 
 /**
  * Show the current Subscription

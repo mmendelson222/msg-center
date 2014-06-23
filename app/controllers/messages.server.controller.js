@@ -5,7 +5,7 @@
  */
 var mongoose = require('mongoose'),
     Message = mongoose.model('Message'),
-    Syndicate = mongoose.model('Syndicate'),
+    Subscription = mongoose.model('Subscription'),
     _ = require('lodash');
 
 // Load the twilio module
@@ -20,59 +20,10 @@ var twilioConfig = {
     number : 'TWILIO_NUMBER'
 };
 
-var helpInfo = {
-    'action':'help',
-    'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
-};
-
-exports.parseMessage = function(text, callback) {
-    var a = text.split(' ');
-    var command = a[0].toUpperCase();
-    if (a.length < 2 ||  command === 'HELP'){
-        return helpInfo;
-    }
-    var target = a[1].toUpperCase();
-
-    Syndicate.findOne({'name':target}, function(err, syndicate){
-        if (syndicate) {
-            switch (command) {
-                case 'START':
-                    if (syndicate) {
-                        callback({
-                            'action': 'start ' + target,
-                            'message': 'You have subscribed to ' + target + ' messages.'
-                        });
-                    }
-                    break;
-                case 'STOP':
-                    if (syndicate) {
-                        callback({
-                            'action': 'stop ' + target,
-                            'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
-                        });
-                    }
-                    break;
-                default:
-                    callback({
-                        'action': 'error ' + target,
-                        'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
-                    });
-                    break;
-            }
-        } else {
-            callback({
-                'action': 'error ',
-                'message': 'Group '+target+' does not exist.'
-            });
-        }
-    });
-};
-
 /**
  * Create a Message
  */
 exports.receive = function(req, res) {
-
     console.log('\nTwilio service request received: '+req.url);
     var resp = new twilio.TwimlResponse();
     var text = req.body.Body;
@@ -84,23 +35,12 @@ exports.receive = function(req, res) {
             'response':parsed.message
         });
         message.save();
-
         resp.sms(message.response);
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(resp.toString());
     });
 };
 
-//test
-exports.subscribe = function(req, res) {
-    exports.parseMessage(req.body.text, function(parsed){
-        if (parsed) {
-            console.dir(parsed);
-            res.jsonp(parsed);
-        } else
-            res.send(400, {'message': 'server error'});
-    });
-};
 
 
 /**
@@ -129,23 +69,26 @@ exports.send = function(req, res) {
         to: sendTo,
         from: sentFrom,
         body:message.text
-    }, function(error, messageInfo) {
+    }, function(err, messageInfo) {
         // The HTTP request to Twilio will run asynchronously. This callback
         // function will be called when a response is received from Twilio
         // The 'error" variable will contain error information, if any.
         // If the request was successful, this value will be "falsy"
-        if (!error) {
+
+        if (err) {
+            return res.send(400, {
+                message: err
+            });
+        } else {
             // The second argument to the callback will contain the information
             // sent back by Twilio for the request. In this case, it is the
             // information about the text messsage you just sent:
-            console.log('Success! The SID for this SMS message is:');
-            console.log(messageInfo.sid);
-
-            console.log('Message sent on:');
-            console.log(messageInfo.dateCreated);
-        } else {
-            console.log('Oops! There was an error.');
+            // console.log(messageInfo.sid);
+            // console.log('Message sent on:');
+            // console.log(messageInfo.dateCreated);
+            res.jsonp({'message':'Message '+messageInfo.status+' to '+messageInfo.to});
         }
+
     });
 };
 

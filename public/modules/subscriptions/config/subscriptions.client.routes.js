@@ -9,11 +9,11 @@ angular.module('subscriptions').config(['$stateProvider',
 			url: '/subscriptions',
 			templateUrl: 'modules/subscriptions/views/list-subscriptions.client.view.html'
 		}).
-            /*
+            //primarily for testing
 		state('createSubscription', {
 			url: '/subscriptions/create',
 			templateUrl: 'modules/subscriptions/views/create-subscription.client.view.html'
-		}).*/
+		}).
 		state('viewSubscription', {
 			url: '/subscriptions/:subscriptionId',
 			templateUrl: 'modules/subscriptions/views/view-subscription.client.view.html'

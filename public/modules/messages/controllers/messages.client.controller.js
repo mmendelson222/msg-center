@@ -8,7 +8,6 @@ angular.module('messages').controller('MessagesController', ['$scope', 'Messages
             });
             message.$send(message, function(response) {
                 $scope.result = response;
-                //$location.path('messages');
             }, function(errorResponse) {
                 $scope.error = errorResponse.data.message;
             });
