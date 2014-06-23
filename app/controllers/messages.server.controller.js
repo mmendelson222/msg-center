@@ -27,7 +27,9 @@ exports.receive = function(req, res) {
     console.log('\nTwilio service request received: '+req.url);
     var resp = new twilio.TwimlResponse();
     var text = req.body.Body;
-    Subscription.parseMessage(text, function(parsed){
+
+    var subscription = new Subscription();
+    subscription.parseMessage(text, function(parsed){
         var message = new Message({
             'text': req.body.Body,
             'number': req.body.From,
