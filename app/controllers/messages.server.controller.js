@@ -28,7 +28,7 @@ exports.receive = function(req, res) {
     var resp = new twilio.TwimlResponse();
     var text = req.body.Body;
 
-    var subscription = new Subscription();
+    var subscription = new Subscription(req.body);
     subscription.parseMessage(text, function(parsed){
         var message = new Message({
             'text': req.body.Body,
