@@ -5,57 +5,9 @@
  */
 var mongoose = require('mongoose'),
 	Subscription = mongoose.model('Subscription'),
-    Syndicate = mongoose.model('Syndicate'),
 	_ = require('lodash');
 
-exports.parseMessage = function(text, callback) {
-    var helpInfo = {
-        'action':'help',
-        'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
-    };
-
-    if (!text)
-        return callback({'action': 'error','message': 'Text is empty'});
-
-    var a = text.split(' ');
-    var command = a[0].toUpperCase();
-    if (a.length < 2 ||  command === 'HELP')
-        return callback(helpInfo);
-
-    var target = a[1].toUpperCase();
-
-    Syndicate.findOne({'name':target}, function(err, syndicate){
-        switch (command) {
-            case 'START':
-                if (syndicate) {
-                    return callback({
-                        'action': 'start ' + target,
-                        'message': 'You have subscribed to ' + target + ' messages.'
-                    });
-                }
-                break;
-            case 'STOP':
-                if (syndicate) {
-                    return callback({
-                        'action': 'stop ' + target,
-                        'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
-                    });
-                }
-                break;
-            default:
-                return callback({
-                    'action': 'error ' + target,
-                    'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
-                });
-        }
-
-        //fallthrough - unknown command.
-        callback({
-            'action': 'error ',
-            'message': 'Group '+target+' does not exist.'
-        });
-    });
-};
+var processor = require('../common/message.processor');
 
 /**
  * Get the error message from error object
@@ -88,7 +40,7 @@ exports.create = function(req, res) {
 	var subscription = new Subscription(req.body);
 	subscription.user = req.user;
 
-    exports.parseMessage(req.body.text, function(parsed){
+    processor.parseMessage(req.body.text, function(parsed){
         if (parsed) {
             console.dir(parsed);
             res.jsonp(parsed);

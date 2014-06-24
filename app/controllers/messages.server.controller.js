@@ -8,6 +8,8 @@ var mongoose = require('mongoose'),
     Subscription = mongoose.model('Subscription'),
     _ = require('lodash');
 
+var processor = require('../common/message.processor');
+
 // Load the twilio module
 var twilio = require('twilio');
 
@@ -28,8 +30,7 @@ exports.receive = function(req, res) {
     var resp = new twilio.TwimlResponse();
     var text = req.body.Body;
 
-    var subscription = new Subscription(req.body);
-    subscription.parseMessage(text, function(parsed){
+    processor.parseMessage(text, function(parsed){
         var message = new Message({
             'text': req.body.Body,
             'number': req.body.From,
