@@ -7,8 +7,7 @@
             <h4 class="list-group-item-heading" data-ng-bind="subscription.syndicate"></h4>
             <small class="list-group-item-text">
                 <span ng-if="subscription.fullName">{{subscription.fullName}} ({{subscription.number}})</span></span>
-                <span ng-if="not subscription.fullName">{{subscription.number}}</span></span>
-				, joined
+                <span ng-if="!subscription.fullName">{{subscription.number}}</span></span>, joined
 				<span data-ng-bind="subscription.created | date:'medium'"></span>
 			</small>
         </a>
