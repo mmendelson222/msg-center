@@ -37,29 +37,37 @@ var getErrorMessage = function(err) {
  * Create a Subscription
  */
 exports.create = function(req, res) {
-	var subscription = new Subscription(req.body);
-	subscription.user = req.user;
-
     processor.parseMessage(req.body.text, function(parsed){
         if (parsed) {
             console.dir(parsed);
             res.jsonp(parsed);
         } else
             res.send(400, {'message': 'server error'});
-    });
 
-    /*
-    subscription.save(function(err) {
-		if (err) {
-			return res.send(400, {
-				message: getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(subscription);
-		}
-	});
-	*/
+
+        //process actions.
+        switch (parsed.action) {
+            case 'START':
+                var subscription = new Subscription(req.body);
+                subscription.user = req.user;
+                subscription.syndicate = parsed.data;
+                subscription.number = '000-000-0000';
+                subscription.save(function (err) {
+                    //if validation fails here, what do do?
+                    if (err) {
+                        console.dir(command + ' update failed with error: ' + err);
+                        //res.send(400, {'message': 'server error: '+err});
+                    }
+                });
+                break;
+            case 'STOP':
+                break;
+            default:
+
+        }
+    });
 };
+
 
 
 
@@ -75,9 +83,7 @@ exports.read = function(req, res) {
  */
 exports.update = function(req, res) {
 	var subscription = req.subscription ;
-
 	subscription = _.extend(subscription , req.body);
-
 	subscription.save(function(err) {
 		if (err) {
 			return res.send(400, {

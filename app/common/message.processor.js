@@ -27,7 +27,8 @@ exports.parseMessage = function(text, callback) {
             case 'START':
                 if (syndicate) {
                     return callback({
-                        'action': 'start ' + target,
+                        'action': command,
+                        'data': target,
                         'message': 'You have subscribed to ' + target + ' messages.'
                     });
                 }
@@ -35,14 +36,16 @@ exports.parseMessage = function(text, callback) {
             case 'STOP':
                 if (syndicate) {
                     return callback({
-                        'action': 'stop ' + target,
+                        'action': command,
+                        'data': target,
                         'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
                     });
                 }
                 break;
             default:
                 return callback({
-                    'action': 'error ' + target,
+                    'action': command,
+                    'data': target,
                     'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
                 });
         }
