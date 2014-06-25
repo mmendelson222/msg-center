@@ -56,7 +56,7 @@ exports.create = function(req, res) {
                 subscription.save(function (err) {
                     //if validation fails here, what do do?
                     if (err) {
-                        console.dir(command + ' update failed with error: ' + err);
+                        console.dir(parsed.action + ' update failed with error: ' + err);
                         //res.send(400, {'message': 'server error: '+err});
                     }
                 });
