@@ -29,7 +29,8 @@ describe('Subscription Model Unit Tests:', function() {
 
 		user.save(function() { 
 			subscription = new Subscription({
-				name: 'Subscription Name',
+				syndicate: 'TEST',
+                number: '235',
 				user: user
 			});
 
@@ -45,17 +46,42 @@ describe('Subscription Model Unit Tests:', function() {
 			});
 		});
 
-		it('should be able to show an error when try to save without name', function(done) { 
-			subscription.name = '';
+        it('should be able to show an error when try to save without number', function(done) {
+            subscription.number = '';
 
-			return subscription.save(function(err) {
-				should.exist(err);
-				done();
-			});
-		});
-	});
+            return subscription.save(function(err) {
+                should.exist(err);
+                ('ValidationError').should.equal(err.name);
+                done();
+            });
+        });
 
-	afterEach(function(done) { 
+        it('should fail to add the same number/syndicate combination again', function(done) {
+            subscription.save(function(err) {
+                console.log('saved');
+                should.not.exist(err);
+
+                var duplicate = new Subscription({
+                    syndicate: 'TEST',
+                    number: '235',
+                    user: user
+                });
+
+                duplicate.save(function(err) {
+                    console.log('saved again');
+                    should.exist(err);
+                    (11000).should.equal(err.code);
+                    done();
+                });
+
+            });
+
+
+        });
+ 	});
+
+
+	afterEach(function(done) {
 		Subscription.remove().exec();
 		User.remove().exec();
 

@@ -34,4 +34,6 @@ var SubscriptionSchema = new Schema({
 	}
 });
 
+SubscriptionSchema.index({ number: 1, syndicate: -1 }, { unique: true })
+
 mongoose.model('Subscription', SubscriptionSchema);

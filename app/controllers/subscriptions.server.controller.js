@@ -35,6 +35,7 @@ var getErrorMessage = function(err) {
 
 /**
  * Create a Subscription
+ * Parse a message and add the subscription to the database
  */
 exports.create = function(req, res) {
     processor.parseMessage(req.body.text, function(parsed){
