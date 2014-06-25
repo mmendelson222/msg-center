@@ -58,17 +58,14 @@ describe('Subscription Model Unit Tests:', function() {
 
         it('should fail to add the same number/syndicate combination again', function(done) {
             subscription.save(function(err) {
-                console.log('saved');
                 should.not.exist(err);
 
                 var duplicate = new Subscription({
                     syndicate: 'TEST',
-                    number: '235',
-                    user: user
+                    number: '235'
                 });
 
                 duplicate.save(function(err) {
-                    console.log('saved again');
                     should.exist(err);
                     (11000).should.equal(err.code);
                     done();
