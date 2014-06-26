@@ -27,7 +27,6 @@ exports.chooseNext = function(node, userInput){
     if (!node.nodes)
         throw 'No child nodes.';
     for (var i=0; i<node.nodes.length; i++){
-        console.log(node.nodes[i].match +  ' '+node.nodes[i].match.test());
         if (node.nodes[i].match.test(userInput))
             return node.nodes[i];
     }
