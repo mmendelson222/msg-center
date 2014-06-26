@@ -22,6 +22,22 @@ exports.parseMessage = function(text, callback) {
 
     var target = a[1].toUpperCase();
 
+    switch (command) {
+        case 'START':
+        case 'STOP':
+            exports.subscribe(command, target, callback);
+            break;
+        default:
+            return callback({
+                'action': command,
+                'data': target,
+                'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
+            });
+    }
+};
+
+//process subscribe or unsubscribe requests
+exports.subscribe = function(command, target, callback){
     Syndicate.findOne({'name':target}, function(err, syndicate){
         switch (command) {
             case 'START':
@@ -29,7 +45,7 @@ exports.parseMessage = function(text, callback) {
                     return callback({
                         'action': command,
                         'data': target,
-                        'message': 'You have subscribed to ' + target + ' messages.'
+                     'message': 'You have subscribed! to ' + target + ' messages.'
                     });
                 }
                 break;
@@ -38,7 +54,7 @@ exports.parseMessage = function(text, callback) {
                     return callback({
                         'action': command,
                         'data': target,
-                        'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                        'message': 'You have! unsubscribed.  To resubscribe text START ' + target + ' to this number'
                     });
                 }
                 break;
@@ -46,7 +62,7 @@ exports.parseMessage = function(text, callback) {
                 return callback({
                     'action': command,
                     'data': target,
-                    'message': 'I don\'t know what to do with that command.  ' + helpInfo.message
+                    'message': 'Internal error: '+command+' is not a subscription command'
                 });
         }
 
