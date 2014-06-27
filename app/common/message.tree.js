@@ -9,11 +9,9 @@ var treeIntegrityErrors;
 function treeNodeIntegrity(node){
     //rules for ALL nodes.
     if (!node.hasOwnProperty('id')){
-        console.dir('At least one node missing id');
         treeIntegrityErrors.push('At least one node missing id');
     }
     if (!node.hasOwnProperty('text')){
-        console.dir('no text');
         treeIntegrityErrors.push('Node '+node.id+ ' is missing text');
     }
 
@@ -21,13 +19,12 @@ function treeNodeIntegrity(node){
         for (var i = 0; i < node.nodes.length; i++) {
             //rules for non-top level nodes
             if (!node.nodes[i].hasOwnProperty('match')) {
-                console.dir('Must ave a match string');
                 treeIntegrityErrors.push('Must ave a match string');
             }
             treeNodeIntegrity(node.nodes[i]);
         }
     }
-};
+}
 
 exports.treeIntegrity = function(tree){
     treeIntegrityErrors = [];

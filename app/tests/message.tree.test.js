@@ -45,48 +45,62 @@ var data =
     ]
 };
 
+function showErrors(errors){
+    for (var i; i<errors.length; i++) console.error(errors[i]);
+}
+
 /**
  * Unit tests
  */
-describe('Tree structure tests: ', function() {
+describe('Tree structure tests', function() {
     beforeEach(function(done) {
         //Initiate the tree.
         //guess we don't need to do this.
         done();
     });
 
-    it('is valid root with node', function(done){
-        var tree = {
-            id: 'root',
-            text: 'Welcome.  Yes or no?',
-            nodes: [{id: 'node', text: 'this is the node', match:/mmm/}]
-        };
-        var errors = Tree.treeIntegrity(tree);
-        for (var i; i<errors.length; i++) console.dir(errors[i]);
-        errors.length.should.equal(0);
-        done();
-    });
+    describe('Validation method tests', function() {
+        it('is valid root with node', function (done) {
+            var tree = {
+                id: 'root',
+                text: 'Welcome.  Yes or no?',
+                nodes: [
+                    {id: 'node', text: 'this is the node', match: /mmm/}
+                ]
+            };
+            var errors = Tree.treeIntegrity(tree);
+            showErrors(errors);
+            errors.length.should.equal(0);
+            done();
+        });
 
-    it('is invalid because node has no match', function(done){
-        var tree = {
-            id: 'root',
-            text: 'Welcome.  Yes or no?',
-            nodes: [{id: 'node', text: 'this is the node'}]
-        };
-        var errors = Tree.treeIntegrity(tree);
-        errors.length.should.equal(1);
-        done();
-    });
+        it('is invalid because node has no match', function (done) {
+            var tree = {
+                id: 'root',
+                text: 'Welcome.  Yes or no?',
+                nodes: [
+                    {id: 'node', text: 'this is the node'}
+                ]
+            };
+            var errors = Tree.treeIntegrity(tree);
+            showErrors(errors);
+            errors.length.should.equal(1);
+            done();
+        });
 
-    it('is invalid because node missing everything', function(done){
-        var tree = {
-            id: 'root',
-            text: 'Welcome.  Yes or no?',
-            nodes: [{}]
-        };
-        var errors = Tree.treeIntegrity(tree);
-        errors.length.should.equal(3);
-        done();
+        it('is invalid because node missing everything', function (done) {
+            var tree = {
+                id: 'root',
+                text: 'Welcome.  Yes or no?',
+                nodes: [
+                    {}
+                ]
+            };
+            var errors = Tree.treeIntegrity(tree);
+            showErrors(errors);
+            errors.length.should.equal(3);
+            done();
+        });
     });
 
     it('gets the appropriate tree node.', function(done) {
