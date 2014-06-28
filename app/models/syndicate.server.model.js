@@ -41,7 +41,15 @@ var SyndicateSchema = new Schema({
 	user: {
 		type: Schema.ObjectId,
 		ref: 'User'
-	}
+	},
+    calendar_id : {
+        type: String,
+        trim: true
+    },
+    message_tree : {
+        type: String,
+        trim: true
+    }
 });
 
 mongoose.model('Syndicate', SyndicateSchema);

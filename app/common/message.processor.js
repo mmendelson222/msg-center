@@ -4,28 +4,35 @@
  */
 
 var mongoose = require('mongoose'),
-    Syndicate = mongoose.model('Syndicate');
+    Syndicate = mongoose.model('Syndicate'),
+    Subscription = mongoose.model('Subscription');
 
-exports.parseMessage = function(text, callback) {
-    var helpInfo = {
-        'action':'help',
-        'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
-    };
+var helpInfo = {
+    'action':'help',
+    'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
+};
 
-    if (!text)
+exports.parseMessage = function(msg_text, callback) {
+    if (!msg_text)
         return callback({'action': 'error','message': 'Text is empty'});
 
-    var a = text.split(' ');
-    var command = a[0].toUpperCase();
-    if (a.length < 2 ||  command === 'HELP')
-        return callback(helpInfo);
+    exports.parseCommand (msg_text, callback);
+};
 
-    var target = a[1].toUpperCase();
+
+exports.parseCommand = function(msg_text, callback){
+    var commandDataPair = msg_text.toUpperCase().split(/\s(.+)?/);
+    commandDataPair[0]=commandDataPair[0].toUpperCase();
+    if (commandDataPair.length < 2 ||  commandDataPair[0] === 'HELP')
+     return callback(helpInfo);
+
+    var command = commandDataPair[0];
+    var target = commandDataPair[1];
 
     switch (command) {
         case 'START':
         case 'STOP':
-            exports.subscribe(command, target, callback);
+            exports.subscribe(msg_text, command, target, callback);
             break;
         default:
             return callback({
@@ -35,41 +42,55 @@ exports.parseMessage = function(text, callback) {
             });
     }
 };
+//exports.treeRequest = function(command, )
+
 
 //process subscribe or unsubscribe requests
-exports.subscribe = function(command, target, callback){
+exports.subscribe = function(msg_text, command, target, callback){
     Syndicate.findOne({'name':target}, function(err, syndicate){
+        var subscription = new Subscription();
+        subscription.syndicate = target;
+        subscription.number = '000-000-0000';
+
         switch (command) {
             case 'START':
                 if (syndicate) {
-                    return callback({
-                        'action': command,
-                        'data': target,
-                     'message': 'You have subscribed! to ' + target + ' messages.'
+                    subscription.save(function (err) {
+                        if (err) {
+                            return callback({
+                                'action': command,
+                                'data': target,
+                                'message': command + ' failed with error: ' + err
+                            });
+                        } else {
+                            return callback({
+                                'action': command,
+                                'data': target,
+                                'message': 'You have subscribed to ' + target + ' messages.'
+                            });
+                        }
                     });
                 }
                 break;
             case 'STOP':
                 if (syndicate) {
-                    return callback({
-                        'action': command,
-                        'data': target,
-                        'message': 'You have! unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                    Subscription.remove({'syndicate':'TEST', 'number':'000-000-0000'}, function(err) {
+                        if (err) {
+                            return callback({
+                                'action': command,
+                                'data': target,
+                                'message': command + ' failed with error: ' + err
+                            });
+                        } else {
+                            return callback({
+                                'action': command,
+                                'data': target,
+                                'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
+                            });
+                        }
                     });
                 }
                 break;
-            default:
-                return callback({
-                    'action': command,
-                    'data': target,
-                    'message': 'Internal error: '+command+' is not a subscription command'
-                });
         }
-
-        //fallthrough - unknown command.
-        callback({
-            'action': 'error ',
-            'message': 'Group '+target+' does not exist.'
-        });
     });
 };

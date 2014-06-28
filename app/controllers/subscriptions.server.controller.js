@@ -35,7 +35,7 @@ var getErrorMessage = function(err) {
 
 /**
  * Create a Subscription
- * Parse a message and add the subscription to the database
+ * Parse a message.  the parseMessage function does heavy lifting.
  */
 exports.create = function(req, res) {
     processor.parseMessage(req.body.text, function(parsed){
@@ -44,28 +44,6 @@ exports.create = function(req, res) {
             res.jsonp(parsed);
         } else
             res.send(400, {'message': 'server error'});
-
-
-        //process actions.
-        switch (parsed.action) {
-            case 'START':
-                var subscription = new Subscription(req.body);
-                subscription.user = req.user;
-                subscription.syndicate = parsed.data;
-                subscription.number = '000-000-0000';
-                subscription.save(function (err) {
-                    //if validation fails here, what do do?
-                    if (err) {
-                        console.dir(parsed.action + ' update failed with error: ' + err);
-                        //res.send(400, {'message': 'server error: '+err});
-                    }
-                });
-                break;
-            case 'STOP':
-                break;
-            default:
-
-        }
     });
 };
 
@@ -97,7 +75,7 @@ exports.update = function(req, res) {
 };
 
 /**
- * Delete an Subscription
+ * Delete a Subscription
  */
 exports.delete = function(req, res) {
 	var subscription = req.subscription ;
