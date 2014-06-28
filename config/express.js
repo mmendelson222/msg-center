@@ -66,7 +66,9 @@ module.exports = function(db) {
 	// Environment dependent middleware
 	if (process.env.NODE_ENV === 'development') {
 		// Enable logger (morgan)
-		app.use(morgan('dev'));
+		//app.use(morgan('dev'));
+        //skip the annoying, repetitive 304's.
+        morgan({ format: 'dev', skip: function(req, res){ return res.statusCode === 304; }});
 
 		// Disable views cache
 		app.set('view cache', false);
