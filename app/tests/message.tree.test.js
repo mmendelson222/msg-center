@@ -90,6 +90,20 @@ describe('Tree structure tests', function() {
             done();
         });
 
+        it('is invalid because node id is reused', function (done) {
+            var tree = {
+                id: 'root',
+                text: 'Welcome.  Yes or no?',
+                nodes: [
+                    {id: 'root', text: 'this is the node'}
+                ]
+            };
+            var errors = Tree.treeIntegrity(tree);
+            showErrors(errors);
+            errors.length.should.equal(1);
+            done();
+        });
+
         it('is invalid because node missing everything', function (done) {
             var tree = {
                 id: 'root',

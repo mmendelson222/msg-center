@@ -4,9 +4,13 @@
 'use strict';
 
 var treeIntegrityErrors;
+var allNodes;
 
 //recurse the tree to find a node by id.
 function treeNodeIntegrity(node){
+    if (allNodes.join().indexOf(node.id)>-1)
+        treeIntegrityErrors.push('Node id '+node.id+ ' is used more than once');
+
     //rules for ALL nodes.
     if (!node.hasOwnProperty('id')){
         treeIntegrityErrors.push('At least one node missing id');
@@ -28,6 +32,7 @@ function treeNodeIntegrity(node){
 
 exports.treeIntegrity = function(tree){
     treeIntegrityErrors = [];
+    allNodes = [];
     treeNodeIntegrity(tree);
     if (treeIntegrityErrors.length === 0)
         return null;
