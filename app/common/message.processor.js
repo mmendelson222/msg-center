@@ -34,6 +34,9 @@ exports.parseCommand = function(msg_text, callback){
         case 'STOP':
             exports.subscribe(msg_text, command, target, callback);
             break;
+        case 'NAME':
+            exports.updateName(command, target, callback);
+            break;
         default:
             return callback({
                 'action': command,
@@ -42,7 +45,10 @@ exports.parseCommand = function(msg_text, callback){
             });
     }
 };
-//exports.treeRequest = function(command, )
+
+exports.subscribe = function(msg_text, command, target, callback){
+
+};
 
 
 //process subscribe or unsubscribe requests

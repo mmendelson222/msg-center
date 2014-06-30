@@ -63,6 +63,10 @@ describe('Message Processor Unit Tests:', function() {
                 done();
             });
         });
+
+        it('process a NAME request', function(done) {
+            (false).should.equal(true, "unimplemented")
+        });
     });
 
 
