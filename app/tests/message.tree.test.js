@@ -45,9 +45,10 @@ var data =
     ]
 };
 
+//uncomment below to examine errors. 
 function showErrors(errors){
     if (!errors) return;
-    for (var i=0; i<errors.length; i++) console.error(errors[i]);
+    //console.error(errors.join(', '));
 }
 
 /**
@@ -80,7 +81,7 @@ describe('Tree structure tests', function() {
                 id: 'root',
                 text: 'Welcome.  Yes or no?',
                 nodes: [
-                    {id: 'node', text: 'this is the node'}
+                    {id: 'myID', text: 'this is the node'}
                 ]
             };
             var errors = Tree.treeIntegrity(tree);

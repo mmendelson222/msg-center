@@ -19,7 +19,7 @@ function treeNodeIntegrity(node){
         for (var i = 0; i < node.nodes.length; i++) {
             //rules for non-top level nodes
             if (!node.nodes[i].hasOwnProperty('match')) {
-                treeIntegrityErrors.push('Must ave a match string');
+                treeIntegrityErrors.push('Node '+node.nodes[i].id+' needs a match pattern');
             }
             treeNodeIntegrity(node.nodes[i]);
         }
