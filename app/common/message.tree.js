@@ -29,7 +29,7 @@ function treeNodeIntegrity(node){
 exports.treeIntegrity = function(tree){
     treeIntegrityErrors = [];
     treeNodeIntegrity(tree);
-    if (treeIntegrityErrors.length == 0)
+    if (treeIntegrityErrors.length === 0)
         return null;
     else
         return treeIntegrityErrors;
