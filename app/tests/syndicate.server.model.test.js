@@ -45,7 +45,7 @@ describe('Syndicate Model Unit Tests:', function() {
 			});
 		});
 
-		it('should be able to show an error when try to save without name', function(done) { 
+		it('should fail when attempting to save without name', function(done) {
 			syndicate.name = '';
 
 			return syndicate.save(function(err) {
@@ -53,7 +53,35 @@ describe('Syndicate Model Unit Tests:', function() {
 				done();
 			});
 		});
-	});
+
+        describe('Tree validation when saving', function() {
+            it('should fail when attempting to save invalid JSON', function (done) {
+                syndicate.message_tree = 'asdf';
+
+                return syndicate.save(function (err) {
+                    should.exist(err);
+                    done();
+                });
+            });
+
+            it('should fail when attempting to save non-compliant JSON ', function (done) {
+                syndicate.message_tree = '{"JSON": true}';
+                return syndicate.save(function (err) {
+                    should.exist(err);
+                    done();
+                });
+            });
+
+            it('should succeed when saving a valid tree ', function (done) {
+                syndicate.message_tree = '{"id": "root", "text":"here is some text"}';
+                return syndicate.save(function (err) {
+                    should.not.exist(err);
+                    done();
+                });
+            });
+        });
+
+    });
 
 	afterEach(function(done) { 
 		Syndicate.remove().exec();

@@ -4,7 +4,26 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-	Schema = mongoose.Schema;
+	Schema = mongoose.Schema,
+    Tree = require('../common/message.tree');  //for validation
+
+
+//TODO: How to return specific validation error???
+var validateTree = function(property) {
+    var json;
+    try {
+        json = JSON.parse(property);
+    } catch(exception) {
+        return false;
+    }
+    var errors = Tree.treeIntegrity(json);
+    if (errors){
+        //console.dir(errors.join(', '));
+        return false;
+    }
+    return true;
+};
+
 
 /**
  * Syndicate Schema
@@ -48,7 +67,9 @@ var SyndicateSchema = new Schema({
     },
     message_tree : {
         type: String,
-        trim: true
+        trim: true,
+        //validate: [validateJSON, 'This field needs to contain valid JSON']
+        validate: [validateTree, 'Tree failed validation']
     }
 });
 

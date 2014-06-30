@@ -46,6 +46,7 @@ var data =
 };
 
 function showErrors(errors){
+    if (!errors) return;
     for (var i; i<errors.length; i++) console.error(errors[i]);
 }
 
@@ -70,7 +71,7 @@ describe('Tree structure tests', function() {
             };
             var errors = Tree.treeIntegrity(tree);
             showErrors(errors);
-            errors.length.should.equal(0);
+            (errors === null).should.be.true;
             done();
         });
 
