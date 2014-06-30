@@ -18,7 +18,7 @@ var validateTree = function(property) {
     }
     var errors = Tree.treeIntegrity(json);
     if (errors){
-        //console.dir(errors.join(', '));
+        console.dir(errors.join(', '));
         return false;
     }
     return true;

@@ -38,6 +38,10 @@ exports.create = function(req, res) {
 	var syndicate = new Syndicate(req.body);
 	syndicate.user = req.user;
 
+    /*if (syndicate.message_tree){
+        syndicate.message_tree = JSON.parse(syndicate.message_tree);
+    }*/
+
 	syndicate.save(function(err) {
 		if (err) {
 			return res.send(400, {

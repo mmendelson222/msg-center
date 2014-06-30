@@ -9,7 +9,9 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 		$scope.create = function() {
 			// Create new Syndicate object
 			var syndicate = new Syndicates ({
-				name: this.name
+				name: this.name,
+                calendar_id: this.googleCalendar,
+                message_tree: this.messageTree
 			});
 
 			// Redirect after save
@@ -19,8 +21,8 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 				$scope.error = errorResponse.data.message;
 			});
 
-			// Clear form fields
-			this.name = '';
+			// Don't Clear form fields
+			// this.name = '';
 		};
 
 		// Remove existing Syndicate

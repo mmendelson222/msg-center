@@ -45,7 +45,7 @@ var data =
     ]
 };
 
-//uncomment below to examine errors. 
+//uncomment below to examine errors.
 function showErrors(errors){
     if (!errors) return;
     //console.error(errors.join(', '));

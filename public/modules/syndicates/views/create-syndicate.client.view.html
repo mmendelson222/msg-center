@@ -12,6 +12,18 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="control-label" for="googleCalendar">Google Calendar ID</label> (rebroadcast messages from Google Calendar)
+                    <div class="controls">
+                        <input type="text" data-ng-model="googleCalendar" id="googleCalendar" class="form-control" placeholder="Calendar ID">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="messageTree">Query Tree JSON</label> (react to specific text messages)
+                    <div class="controls">
+                        <textarea data-ng-model="messageTree" id="messageTree" class="form-control" placeholder="Query Tree"  cols="30" rows="10" ></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
                     <input type="submit" class="btn btn-default">
                 </div>
 				<div data-ng-show="error" class="text-danger">
