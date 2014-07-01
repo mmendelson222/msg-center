@@ -11,6 +11,26 @@ var Processor = require('../common/message.processor'),
     Subscription = mongoose.model('Subscription');
 
 var user, syndicate;
+var test_number = '000-000-0000';
+
+function assertSubscriptionInDB(syndicate, number, shouldExist, done){
+    Subscription.find({'syndicate':syndicate, 'number':number}, function(err, results){
+       (err === null).should.equal(true);
+       if (shouldExist){
+           results.length.should.equal(1);
+           done();
+       } else {
+           results.length.should.equal(0);
+           done();
+       }
+    });
+}
+
+
+function assertSubscriptionNamed(syndicate, number, shouldExist, done){
+    (0).should.equal(1, 'unimplemented');
+    done();
+}
 
 /**
  * Unit tests
@@ -39,25 +59,27 @@ describe('Message Processor Unit Tests:', function() {
 
     describe('Message Parsing', function() {
         it('parse a subscribe request', function(done) {
-            Processor.parseMessage('START TEST', function (result){
+            Processor.processMessage('START TEST', test_number, function (result){
                 should.exist(result);
                 result.message.should.startWith('You have subscribed');
                 result.action.should.equal('START');
-                done();
+                assertSubscriptionInDB('TEST', test_number, true, done);
             });
        });
 
         it('unsubscribe request', function(done) {
-            Processor.parseMessage('STOP TEST', function (result){
-                should.exist(result);
-                result.message.should.startWith('You have unsubscribed');
-                result.action.should.equal('STOP');
-                done();
+            Processor.processMessage('START TEST', test_number, function () {
+                Processor.processMessage('STOP TEST', test_number, function (result) {
+                    should.exist(result);
+                    result.message.should.startWith('You have unsubscribed');
+                    result.action.should.equal('STOP');
+                    assertSubscriptionInDB('TEST', test_number, false, done);  //although we might merely deactivate in the future.
+                });
             });
         });
 
         it('invalid command returns help', function(done) {
-            Processor.parseMessage('asdf', function (result){
+            Processor.processMessage('asdf', test_number, function (result){
                 should.exist(result);
                 result.action.should.equal('help');
                 done();
@@ -65,8 +87,10 @@ describe('Message Processor Unit Tests:', function() {
         });
 
         it('process a NAME request', function(done) {
-            (false).should.equal(true, "unimplemented")
+            (false).should.equal(true, 'unimplemented');
+            assertSubscriptionNamed('TEST', '000-000-0000', false, done);
         });
+
     });
 
 

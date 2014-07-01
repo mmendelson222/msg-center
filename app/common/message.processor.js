@@ -12,15 +12,15 @@ var helpInfo = {
     'message':'Commands: START [NAME] or STOP [NAME].  You are subscribed to [TODO]'
 };
 
-exports.parseMessage = function(msg_text, callback) {
+exports.processMessage = function(msg_text, number, callback) {
     if (!msg_text)
         return callback({'action': 'error','message': 'Text is empty'});
 
-    exports.parseCommand (msg_text, callback);
+    exports.parseCommand (msg_text, number, callback);
 };
 
 
-exports.parseCommand = function(msg_text, callback){
+exports.parseCommand = function(msg_text, number, callback){
     var commandDataPair = msg_text.toUpperCase().split(/\s(.+)?/);
     commandDataPair[0]=commandDataPair[0].toUpperCase();
     if (commandDataPair.length < 2 ||  commandDataPair[0] === 'HELP')
@@ -31,11 +31,13 @@ exports.parseCommand = function(msg_text, callback){
 
     switch (command) {
         case 'START':
+            exports.subscribe(target, number, callback);
+            break;
         case 'STOP':
-            exports.subscribe(msg_text, command, target, callback);
+            exports.unsubscribe(target, number, callback);
             break;
         case 'NAME':
-            exports.updateName(command, target, callback);
+            exports.updateName(target, number, callback);
             break;
         default:
             return callback({
@@ -46,57 +48,47 @@ exports.parseCommand = function(msg_text, callback){
     }
 };
 
-exports.subscribe = function(msg_text, command, target, callback){
-
+exports.unsubscribe = function(syndicate, number, callback){
+    Subscription.remove({'syndicate':syndicate, 'number': number}, function(err){
+            if (err) {
+                return callback({
+                    'action': 'STOP',
+                    'data': syndicate,
+                    'message': 'STOP failed with error: ' + err
+                });
+            } else {
+                return callback({
+                    'action': 'STOP',
+                    'data': syndicate,
+                    'message': 'You have unsubscribed.  To resubscribe text START ' + syndicate + ' to this number'
+                });
+            }
+        });
 };
 
 
 //process subscribe or unsubscribe requests
-exports.subscribe = function(msg_text, command, target, callback){
-    Syndicate.findOne({'name':target}, function(err, syndicate){
-        var subscription = new Subscription();
-        subscription.syndicate = target;
-        subscription.number = '000-000-0000';
-
-        switch (command) {
-            case 'START':
-                if (syndicate) {
-                    subscription.save(function (err) {
-                        if (err) {
-                            return callback({
-                                'action': command,
-                                'data': target,
-                                'message': command + ' failed with error: ' + err
-                            });
-                        } else {
-                            return callback({
-                                'action': command,
-                                'data': target,
-                                'message': 'You have subscribed to ' + target + ' messages.'
-                            });
-                        }
+exports.subscribe = function(syndicate, number, callback){
+    Syndicate.findOne({'name':syndicate}, function(err, syndicate){
+        if (syndicate) {
+            var subscription = new Subscription();
+            subscription.syndicate = syndicate.name;
+            subscription.number = number;
+            subscription.save(function (err) {
+                if (err) {
+                    return callback({
+                        'action': 'START',
+                        'data': syndicate,
+                        'message': 'START failed with error: ' + err
+                    });
+                } else {
+                    return callback({
+                        'action': 'START',
+                        'data': syndicate,
+                        'message': 'You have subscribed to ' + syndicate + ' messages.'
                     });
                 }
-                break;
-            case 'STOP':
-                if (syndicate) {
-                    Subscription.remove({'syndicate':'TEST', 'number':'000-000-0000'}, function(err) {
-                        if (err) {
-                            return callback({
-                                'action': command,
-                                'data': target,
-                                'message': command + ' failed with error: ' + err
-                            });
-                        } else {
-                            return callback({
-                                'action': command,
-                                'data': target,
-                                'message': 'You have unsubscribed.  To resubscribe text START ' + target + ' to this number'
-                            });
-                        }
-                    });
-                }
-                break;
+            });
         }
     });
 };

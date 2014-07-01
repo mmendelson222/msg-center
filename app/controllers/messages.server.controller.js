@@ -29,11 +29,12 @@ exports.receive = function(req, res) {
     console.log('\nTwilio service request received: '+req.url);
     var resp = new twilio.TwimlResponse();
     var text = req.body.Body;
+    var number = req.body.From;
 
-    processor.parseMessage(text, function(parsed){
+    processor.processMessage(text, number, function(parsed){
         var message = new Message({
-            'text': req.body.Body,
-            'number': req.body.From,
+            'text': text,
+            'number': number,
             'outgoing': false,
             'response':parsed.message
         });

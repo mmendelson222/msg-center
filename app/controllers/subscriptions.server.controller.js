@@ -35,10 +35,12 @@ var getErrorMessage = function(err) {
 
 /**
  * Create a Subscription
- * Parse a message.  the parseMessage function does heavy lifting.
+ * Parse and process a message.  the parseMessage function does heavy lifting.
+ *
+ * TESTING ONLY -- hard wired to a test number.
  */
 exports.create = function(req, res) {
-    processor.parseMessage(req.body.text, function(parsed){
+    processor.processMessage(req.body.text, '000-000-0000', function(parsed){
         if (parsed) {
             console.dir(parsed);
             res.jsonp(parsed);
