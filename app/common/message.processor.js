@@ -82,11 +82,22 @@ exports.subscribe = function(syndicate, number, callback){
             subscription.number = number;
             subscription.save(function (err) {
                 if (err) {
-                    return callback({
-                        'action': 'START',
-                        'data': syndicate,
-                        'message': 'START failed with error: ' + err
-                    });
+                    switch (err.code) {
+                        case 11000:
+                        case 11001:
+                            return callback({
+                                'action': 'START',
+                                'data': syndicate,
+                                'message': 'You are already subscribed to ' + syndicate
+                            });
+                        default:
+                            return callback({
+                                'action': 'START',
+                                'data': syndicate,
+                                'message': 'START failed with error: ' + err
+                            });
+                    }
+
                 } else {
                     return callback({
                         'action': 'START',

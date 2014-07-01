@@ -87,6 +87,17 @@ describe('Message Processor Unit Tests:', function() {
             });
         });
 
+        it('respond with an error if we try subscribing twice.', function(done) {
+            Processor.processMessage('START TEST', test_number, function () {
+                Processor.processMessage('START TEST', test_number, function (result) {
+                    should.exist(result);
+                    result.message.should.startWith('You are already subscribed');
+                    result.action.should.equal('START');
+                    done();
+                });
+            });
+        });
+
         it('invalid command returns help', function(done) {
             Processor.processMessage('asdf', test_number, function (result){
                 should.exist(result);
