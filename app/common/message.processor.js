@@ -69,10 +69,16 @@ exports.unsubscribe = function(syndicate, number, callback){
 
 //process subscribe or unsubscribe requests
 exports.subscribe = function(syndicate, number, callback){
-    Syndicate.findOne({'name':syndicate}, function(err, syndicate){
-        if (syndicate) {
+    Syndicate.find({'name':syndicate}, function(err, syndicates){
+        if (syndicates.length === 0) {
+            return callback({
+                'action': 'error',
+                'data': syndicate,
+                'message': 'Sorry, there is no group called ' + syndicate + '.'
+            });
+        } else {
             var subscription = new Subscription();
-            subscription.syndicate = syndicate.name;
+            subscription.syndicate = syndicate;
             subscription.number = number;
             subscription.save(function (err) {
                 if (err) {

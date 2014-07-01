@@ -78,6 +78,15 @@ describe('Message Processor Unit Tests:', function() {
             });
         });
 
+        it('respond with an error if group does not exist', function(done) {
+            Processor.processMessage('START TEST123', test_number, function (result){
+                should.exist(result);
+                result.message.should.startWith('Sorry');
+                result.action.should.equal('error');
+                done();
+            });
+        });
+
         it('invalid command returns help', function(done) {
             Processor.processMessage('asdf', test_number, function (result){
                 should.exist(result);
