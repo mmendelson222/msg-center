@@ -49,21 +49,31 @@ exports.parseCommand = function(msg_text, number, callback){
 };
 
 exports.unsubscribe = function(syndicate, number, callback){
-    Subscription.remove({'syndicate':syndicate, 'number': number}, function(err){
-            if (err) {
-                return callback({
-                    'action': 'STOP',
-                    'data': syndicate,
-                    'message': 'STOP failed with error: ' + err
-                });
-            } else {
-                return callback({
-                    'action': 'STOP',
-                    'data': syndicate,
-                    'message': 'You have unsubscribed.  To resubscribe text START ' + syndicate + ' to this number'
-                });
-            }
-        });
+    Subscription.find({'syndicate':syndicate, 'number': number}, function(err, subs){
+        if (subs.length === 0) {
+            return callback({
+                'action': 'error',
+                'data': null,
+                'message': 'You are not a member of that group.'
+            });
+        } else {
+            Subscription.remove({'_id': subs[0]._id}, function (err) {
+                if (err) {
+                    return callback({
+                        'action': 'error',
+                        'data': syndicate,
+                        'message': 'STOP failed with error: ' + err
+                    });
+                } else {
+                    return callback({
+                        'action': 'STOP',
+                        'data': syndicate,
+                        'message': 'You have unsubscribed.  To resubscribe text START ' + syndicate + ' to this number'
+                    });
+                }
+            });
+        }
+    });
 };
 
 
@@ -86,13 +96,13 @@ exports.subscribe = function(syndicate, number, callback){
                         case 11000:
                         case 11001:
                             return callback({
-                                'action': 'START',
+                                'action': 'error',
                                 'data': syndicate,
                                 'message': 'You are already subscribed to ' + syndicate
                             });
                         default:
                             return callback({
-                                'action': 'START',
+                                'action': 'error',
                                 'data': syndicate,
                                 'message': 'START failed with error: ' + err
                             });

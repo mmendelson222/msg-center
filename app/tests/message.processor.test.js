@@ -58,7 +58,7 @@ describe('Message Processor Unit Tests:', function() {
     });
 
     describe('Message Parsing', function() {
-        it('parse a subscribe request', function(done) {
+        it('process a subscribe request', function(done) {
             Processor.processMessage('START TEST', test_number, function (result){
                 should.exist(result);
                 result.message.should.startWith('You have subscribed');
@@ -67,7 +67,7 @@ describe('Message Processor Unit Tests:', function() {
             });
        });
 
-        it('unsubscribe request', function(done) {
+        it('process an unsubscribe request', function(done) {
             Processor.processMessage('START TEST', test_number, function () {
                 Processor.processMessage('STOP TEST', test_number, function (result) {
                     should.exist(result);
@@ -87,12 +87,21 @@ describe('Message Processor Unit Tests:', function() {
             });
         });
 
+        it('respond with an error if group does not exist (STOP)', function(done) {
+            Processor.processMessage('STOP TEST123', test_number, function (result) {
+                should.exist(result);
+                result.message.should.startWith('You are not a member');
+                result.action.should.equal('error');
+                done();
+            });
+        });
+
         it('respond with an error if we try subscribing twice.', function(done) {
             Processor.processMessage('START TEST', test_number, function () {
                 Processor.processMessage('START TEST', test_number, function (result) {
                     should.exist(result);
                     result.message.should.startWith('You are already subscribed');
-                    result.action.should.equal('START');
+                    result.action.should.equal('error');
                     done();
                 });
             });
