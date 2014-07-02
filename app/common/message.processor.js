@@ -48,6 +48,10 @@ exports.parseCommand = function(msg_text, number, callback){
     }
 };
 
+exports.addName = function(number, name, callback){
+    callback();
+};
+
 exports.unsubscribe = function(syndicate, number, callback){
     Subscription.find({'syndicate':syndicate, 'number': number}, function(err, subs){
         if (subs.length === 0) {
