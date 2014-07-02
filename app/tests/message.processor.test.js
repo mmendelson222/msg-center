@@ -63,7 +63,9 @@ describe('Message Processor Unit Tests:', function() {
                 should.exist(result);
                 result.message.should.startWith('You have subscribed');
                 result.action.should.equal('START');
-                assertSubscriptionInDB('TEST', test_number, true, done);
+                assertSubscriptionInDB('TEST', test_number, true, function(){
+                    done();
+                });
             });
        });
 
@@ -73,7 +75,9 @@ describe('Message Processor Unit Tests:', function() {
                     should.exist(result);
                     result.message.should.startWith('You have unsubscribed');
                     result.action.should.equal('STOP');
-                    assertSubscriptionInDB('TEST', test_number, false, done);  //although we might merely deactivate in the future.
+                    assertSubscriptionInDB('TEST', test_number, false, function(){
+                        done();
+                    });  //although we might merely deactivate in the future.
                 });
             });
         });
