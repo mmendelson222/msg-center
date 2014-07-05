@@ -31,8 +31,7 @@ function assertSubscriptionNamed(number, expectedName, done){
     Subscription.find({'number':number}, function(err, results){
         (err === null).should.equal(true);
         results.length.should.equal(1);
-        console.dir('hi '+results[0].name);
-        (expectedName).should.equal(results[0].name);
+        (expectedName).should.equal(results[0].fullName);
         done();
     });
 }
@@ -125,9 +124,9 @@ describe('Message Processor Unit Tests:', function() {
         });
 
         it('process a NAME request', function(done) {
-            Processor.processMessage('START TEST', test_number, function () {
-                Processor.addName('000-000-0000', 'John Doe', function () {
-                    assertSubscriptionNamed('000-000-0000', 'John Doe', function () {
+            Processor.processMessage('START TEST', test_number, function (subscribeResult) {
+                Processor.processMessage('NAME John Doe', test_number, function (result) {
+                    assertSubscriptionNamed(test_number, 'John Doe', function () {
                         done();
                     });
                 });

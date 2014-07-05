@@ -21,12 +21,12 @@ exports.processMessage = function(msg_text, number, callback) {
 
 
 exports.parseCommand = function(msg_text, number, callback){
-    var commandDataPair = msg_text.toUpperCase().split(/\s(.+)?/);
+    var commandDataPair = msg_text.split(/\s(.+)?/);
     commandDataPair[0]=commandDataPair[0].toUpperCase();
     if (commandDataPair.length < 2 ||  commandDataPair[0] === 'HELP')
      return callback(helpInfo);
 
-    var command = commandDataPair[0];
+    var command = commandDataPair[0].toUpperCase();
     var target = commandDataPair[1];
 
     switch (command) {
@@ -37,7 +37,7 @@ exports.parseCommand = function(msg_text, number, callback){
             exports.unsubscribe(target, number, callback);
             break;
         case 'NAME':
-            exports.updateName(target, number, callback);
+            exports.updateName(number, target, callback);
             break;
         default:
             return callback({
@@ -48,8 +48,34 @@ exports.parseCommand = function(msg_text, number, callback){
     }
 };
 
-exports.addName = function(number, name, callback){
-    callback();
+exports.updateName = function(number, name, callback){
+    var conditions = { number: number };
+    var update = { $set: { fullName: name }};
+    var options = { multi: true };
+
+    Subscription.update(conditions, update, options, function (err, count, raw) {
+        //console.dir('count is ' + count);
+        //console.dir('The raw response from Mongo was '+ JSON.stringify(raw));
+        if (err) {
+            return callback({
+                'action': 'error',
+                'data': name,
+                'message': 'NAME failed with error: ' + err
+            });
+        } else if (count > 0) {
+            return callback({
+                'action': 'NAME',
+                'data': name,
+                'message': 'Your name has been changed to ' + name
+            });
+        } else {
+            return callback({
+                'action': 'error',
+                'data': name,
+                'message': 'No subscriptions found.'
+            });
+        }
+    });
 };
 
 exports.unsubscribe = function(syndicate, number, callback){
