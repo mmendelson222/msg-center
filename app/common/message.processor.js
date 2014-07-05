@@ -49,6 +49,14 @@ exports.parseCommand = function(msg_text, number, callback){
 };
 
 exports.updateName = function(number, name, callback){
+    if (!name){
+        return callback({
+            'action': 'error',
+            'data': '',
+            'message': 'No name given'
+        });
+    }
+
     var conditions = { number: number };
     var update = { $set: { fullName: name, firstName: name.split(' ')[0] }};
     var options = { multi: true };
