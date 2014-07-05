@@ -12,6 +12,7 @@ var Processor = require('../common/message.processor'),
 
 var user, syndicate;
 var test_number = '000-000-0000';
+var test_name = 'John Doe X';
 
 function assertSubscriptionInDB(syndicate, number, shouldExist, done){
     Subscription.find({'syndicate':syndicate, 'number':number}, function(err, results){
@@ -32,6 +33,7 @@ function assertSubscriptionNamed(number, expectedName, done){
         (err === null).should.equal(true);
         results.length.should.equal(1);
         (expectedName).should.equal(results[0].fullName);
+        ("John").should.equal(results[0].firstName);  //hard-coded shortcut
         done();
     });
 }
@@ -125,8 +127,8 @@ describe('Message Processor Unit Tests:', function() {
 
         it('process a NAME request', function(done) {
             Processor.processMessage('START TEST', test_number, function (subscribeResult) {
-                Processor.processMessage('NAME John Doe', test_number, function (result) {
-                    assertSubscriptionNamed(test_number, 'John Doe', function () {
+                Processor.processMessage('NAME '+test_name, test_number, function (result) {
+                    assertSubscriptionNamed(test_number, test_name, function () {
                         done();
                     });
                 });

@@ -50,7 +50,7 @@ exports.parseCommand = function(msg_text, number, callback){
 
 exports.updateName = function(number, name, callback){
     var conditions = { number: number };
-    var update = { $set: { fullName: name }};
+    var update = { $set: { fullName: name, firstName: name.split(' ')[0] }};
     var options = { multi: true };
 
     Subscription.update(conditions, update, options, function (err, count, raw) {
