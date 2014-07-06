@@ -26,15 +26,15 @@ exports.parseCommand = function(msg_text, number, callback){
     if (commandDataPair.length < 2 ||  commandDataPair[0] === 'HELP')
      return callback(helpInfo);
 
-    var command = commandDataPair[0].toUpperCase();
+    var command = commandDataPair[0];
     var target = commandDataPair[1];
 
-    switch (command) {
+    switch (command.toUpperCase()) {
         case 'START':
-            exports.subscribe(target, number, callback);
+            exports.subscribe(target.toUpperCase(), number, callback);
             break;
         case 'STOP':
-            exports.unsubscribe(target, number, callback);
+            exports.unsubscribe(target.toUpperCase(), number, callback);
             break;
         case 'NAME':
             exports.updateName(number, target, callback);
