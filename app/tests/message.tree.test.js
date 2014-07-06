@@ -18,27 +18,27 @@ var data =
         {
             id : 'yes',
             text: 'You chose yes',
-            match: /yes/i
+            match: 'yes'
         },
         {
             id: 'no',
             text: 'You chose no',
-            match: /no/i
+            match: 'no'
         },
         {
             id: 'maybe',
             text: 'This is your last chance - ok or you\'re done',
-            match: /maybe/i,
+            match: 'maybe',
             nodes: [
                 {
                     id: 'lastchance',
                     text: 'Good job!',
-                    match: /ok/i
+                    match: 'ok'
                 },
                 {
                     id: 'blewit',
                     text: 'Too bad',
-                    match: /.*/i
+                    match: '.*'
                 }
             ]
         }
@@ -128,6 +128,10 @@ describe('Message Tree structure tests', function() {
 
         node = Tree.nodeById(data, 'lastchance');
         node.text.should.equal('Good job!');
+
+        //return the root node if null or undefined.
+        node = Tree.nodeById(data, null);
+        node.id.should.equal('root');
         done();
     });
 

@@ -96,7 +96,8 @@ exports.delete = function(req, res) {
 /**
  * List of Subscriptions
  */
-exports.list = function(req, res) { Subscription.find().sort({'created':-1}).populate('user', 'displayName').exec(function(err, subscriptions) {
+exports.list = function(req, res) {
+    Subscription.find().sort({'created':-1}).populate('user', 'displayName').exec(function(err, subscriptions) {
 		if (err) {
 			return res.send(400, {
 				message: getErrorMessage(err)
@@ -110,7 +111,8 @@ exports.list = function(req, res) { Subscription.find().sort({'created':-1}).pop
 /**
  * Subscription middleware
  */
-exports.subscriptionByID = function(req, res, next, id) { Subscription.findById(id).populate('user', 'displayName').exec(function(err, subscription) {
+exports.subscriptionByID = function(req, res, next, id) {
+    Subscription.findById(id).populate('user', 'displayName').exec(function(err, subscription) {
 		if (err) return next(err);
 		if (! subscription) return next(new Error('Failed to load Subscription ' + id));
 		req.subscription = subscription ;

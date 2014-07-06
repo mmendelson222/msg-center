@@ -22,39 +22,40 @@ var data =
         {
             id : 'yes',
             text: 'You chose yes',
-            match: /yes/i
+            match: 'yes'
         },
         {
             id: 'no',
             text: 'You chose no',
-            match: /no/i
+            match: 'no'
         },
         {
             id: 'maybe',
             text: 'This is your last chance - ok or you\'re done',
-            match: /maybe/i,
+            match: 'maybe',
             nodes: [
                 {
                     id: 'lastchance',
                     text: 'Good job!',
-                    match: /ok/i
+                    match: 'ok'
                 },
                 {
                     id: 'blewit',
                     text: 'Too bad',
-                    match: /.*/i
+                    match: '.*'
                 }
             ]
         }
     ]
 };
 
-
 function assertHasTreeState(syndicate, number, shouldExist, getTreeState){
-    Subscription.find({'syndicate':syndicate, 'number':number}, function(err, results){
-       (err === null).should.equal(true);
-       (results.tree_state === null).should.equal(shouldExist);
-        return getTreeState(results.tree_state);
+    Subscription.findOne({'syndicate':syndicate, 'number':number}, function(err, subscription){
+        if (err)
+            console.dir(JSON.stringify(err));
+        (err === null).should.equal(true);
+        (subscription.tree_state === null).should.equal(shouldExist);
+        return getTreeState(subscription.tree_state);
     });
 }
 
@@ -76,7 +77,7 @@ describe('Message Tree Processor Unit Tests:', function() {
             syndicate = new Syndicate({
                 name: test_syndicate,
                 user: user,
-                message_tree: data
+                message_tree: JSON.stringify(data)
             });
             syndicate.save(function(err) {
                 done();
@@ -88,6 +89,7 @@ describe('Message Tree Processor Unit Tests:', function() {
         Processor.processMessage('START TREE', test_number, function (result) {
             result.action.should.equal('START');
             Processor.processMessage('YES', test_number, function (result) {
+                result.action.should.equal('tree');
                 assertHasTreeState(test_syndicate, test_number, true, function (state) {
                     console.dir(state);
                     done();

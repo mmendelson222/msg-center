@@ -57,6 +57,8 @@ function findNodeById(node, id){
 }
 
 exports.nodeById = function(tree, id){
+    if (!id)
+        return tree;
     return findNodeById(tree, id);
 };
 
@@ -64,7 +66,8 @@ exports.chooseNext = function(node, userInput){
     if (!node.nodes)
         throw 'No child nodes.';
     for (var i=0; i<node.nodes.length; i++){
-        if (node.nodes[i].match.test(userInput))
+        var reg = new RegExp(node.nodes[i].match, "i");
+        if (reg.test(userInput))
             return node.nodes[i];
     }
     return null;
