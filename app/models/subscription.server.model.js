@@ -28,6 +28,9 @@ var SubscriptionSchema = new Schema({
     firstName: {
         type:String
     },
+    tree_state:{
+        type:String
+    },
 	created: {
 		type: Date,
 		default: Date.now
