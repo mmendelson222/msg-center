@@ -49,12 +49,12 @@ var data =
     ]
 };
 
-function assertHasTreeState(syndicate, number, shouldExist, getTreeState){
+function assertHasTreeState(syndicate, number, expectedValue, getTreeState){
     Subscription.findOne({'syndicate':syndicate, 'number':number}, function(err, subscription){
         if (err)
             console.dir(JSON.stringify(err));
         (err === null).should.equal(true);
-        (subscription.tree_state === null).should.equal(shouldExist);
+        (subscription.tree_state).should.equal(expectedValue, 'saved tree state should be '+expectedValue + ', ' +JSON.stringify(subscription));
         return getTreeState(subscription.tree_state);
     });
 }
@@ -80,9 +80,18 @@ describe('Message Tree Processor Unit Tests:', function() {
                 message_tree: JSON.stringify(data)
             });
             syndicate.save(function(err) {
-                done();
+
+                syndicate = new Syndicate({
+                    name: 'NOT_TREE',
+                    user: user
+                });
+                syndicate.save(function(err) {
+                    done();
+                });
+
             });
         });
+
     });
 
     it('process a tree request', function (done) {
@@ -90,9 +99,23 @@ describe('Message Tree Processor Unit Tests:', function() {
             result.action.should.equal('START');
             Processor.processMessage('YES', test_number, function (result) {
                 result.action.should.equal('tree');
-                assertHasTreeState(test_syndicate, test_number, true, function (state) {
-                    console.dir(state);
+                assertHasTreeState(test_syndicate, test_number, 'yes', function (state) {
                     done();
+                });
+            });
+        });
+    });
+
+    it('process a tree request (when subscribed to a non-tree syndicate too)', function (done) {
+        Processor.processMessage('START NOT_TREE', test_number, function (result) {
+            result.action.should.equal('START');
+            Processor.processMessage('START TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('YES', test_number, function (result) {
+                    result.action.should.equal('tree');
+                    assertHasTreeState(test_syndicate, test_number, 'yes', function (state) {
+                        done();
+                    });
                 });
             });
         });

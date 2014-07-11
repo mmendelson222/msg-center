@@ -66,7 +66,7 @@ exports.chooseNext = function(node, userInput){
     if (!node.nodes)
         throw 'No child nodes.';
     for (var i=0; i<node.nodes.length; i++){
-        var reg = new RegExp(node.nodes[i].match, "i");
+        var reg = new RegExp(node.nodes[i].match, 'i');
         if (reg.test(userInput))
             return node.nodes[i];
     }

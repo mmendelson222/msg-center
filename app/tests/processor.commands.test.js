@@ -32,7 +32,7 @@ function assertSubscriptionNamed(number, expectedName, done){
         (err === null).should.equal(true);
         results.length.should.equal(1);
         (expectedName).should.equal(results[0].fullName);
-        ("John").should.equal(results[0].firstName);  //hard-coded shortcut
+        ('John').should.equal(results[0].firstName);  //hard-coded shortcut
         done();
     });
 }
@@ -151,8 +151,8 @@ describe('Message Processor Unit Tests:', function() {
         it('respond with an error if no name given', function(done) {
             Processor.processMessage('START TEST', test_number, function () {
                 Processor.processMessage('NAME ', test_number, function (result) {
-                    result.action.should.equal("error");
-                    result.message.should.startWith("No name");
+                    result.action.should.equal('error');
+                    result.message.should.startWith('No name');
                     done();
                 });
             });
