@@ -7,21 +7,16 @@ var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
     Tree = require('../common/message.tree');  //for validation
 
+var ValidationError = require('mongoose/lib/error/validation');
+var ValidatorError =  require('mongoose/lib/error/validator');
 
-//TODO: How to return specific validation error???
-var validateTree = function(property) {
-    var json;
-    try {
-        json = JSON.parse(property);
-    } catch(exception) {
-        return false;
-    }
+//This validator returns a specific error message.
+var validationErrors = function(json) {
     var errors = Tree.treeIntegrity(json);
     if (errors){
-        console.dir(errors.join(', '));
-        return false;
+        return errors.join(', ') + JSON.stringify(json);
     }
-    return true;
+    return null;
 };
 
 
@@ -66,10 +61,25 @@ var SyndicateSchema = new Schema({
         trim: true
     },
     message_tree : {
-        type: String,
-        trim: true,
-        //validate: [validateJSON, 'This field needs to contain valid JSON']
-        validate: [validateTree, 'Tree failed validation']
+        type: Object,
+        trim: true
+        //validate: [validateTree, 'Tree failed validation']
+    }
+});
+
+//this scenario allows us to pass in any validation message we want.
+SyndicateSchema.pre('save', function(next){
+    if (!this.message_tree)
+        next();
+    else {
+        var userErrors = validationErrors(this.message_tree);
+        if (userErrors) {
+            var error = new ValidationError(this);
+            error.errors.message_tree = new ValidatorError('message_tree', userErrors, this.message_tree);
+            next(error);
+        } else {
+            next();
+        }
     }
 });
 

@@ -77,7 +77,7 @@ describe('Message Tree Processor Unit Tests:', function() {
             syndicate = new Syndicate({
                 name: test_syndicate,
                 user: user,
-                message_tree: JSON.stringify(data)
+                message_tree: data
             });
             syndicate.save(function(err) {
 
@@ -173,7 +173,7 @@ describe('Message Tree Processor Unit Tests:', function() {
 
     afterEach(function(done) {
         Subscription.remove().exec();
-        Syndicate.remove().exec();
+        //Syndicate.remove().exec();
         User.remove().exec();
         done();
     });

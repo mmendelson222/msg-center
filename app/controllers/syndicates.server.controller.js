@@ -35,22 +35,28 @@ var getErrorMessage = function(err) {
  * Create a Syndicate
  */
 exports.create = function(req, res) {
-	var syndicate = new Syndicate(req.body);
-	syndicate.user = req.user;
+    var syndicate = new Syndicate(req.body);
+    syndicate.user = req.user;
 
-    /*if (syndicate.message_tree){
-        syndicate.message_tree = JSON.parse(syndicate.message_tree);
-    }*/
+    if (syndicate.message_tree) {
+        try {
+            syndicate.message_tree = JSON.parse(syndicate.message_tree);
+        } catch (exception) {
+            return res.send(400, {
+                message: exception.message
+            });
+        }
+    }
 
-	syndicate.save(function(err) {
-		if (err) {
-			return res.send(400, {
-				message: getErrorMessage(err)
-			});
-		} else {
-			res.jsonp(syndicate);
-		}
-	});
+    syndicate.save(function(err) {
+        if (err) {
+            return res.send(400, {
+                message: getErrorMessage(err)
+            });
+        } else {
+            res.jsonp(syndicate);
+        }
+    });
 };
 
 /**
@@ -80,7 +86,7 @@ exports.update = function(req, res) {
 };
 
 /**
- * Delete an Syndicate
+ * Delete a Syndicate
  */
 exports.delete = function(req, res) {
 	var syndicate = req.syndicate ;

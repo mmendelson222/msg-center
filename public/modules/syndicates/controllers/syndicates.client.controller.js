@@ -44,6 +44,8 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 		// Update existing Syndicate
 		$scope.update = function() {
 			var syndicate = $scope.syndicate ;
+            syndicate.calendar_id=this.googleCalendar;
+            syndicate.message_tree=this.messageTree;
 
 			syndicate.$update(function() {
 				$location.path('syndicates/' + syndicate._id);

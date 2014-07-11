@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 			},
 			serverJS: {
 				files: watchFiles.serverJS,
-				tasks: ['jshint'],
+				tasks: ['jshint', 'env:test', 'mochaTest'],  //run tests.
 				options: {
 					livereload: true
 				}
