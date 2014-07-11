@@ -94,21 +94,8 @@ describe('Message Tree Processor Unit Tests:', function() {
 
     });
 
-    it('process a tree request', function (done) {
-        Processor.processMessage('START TREE', test_number, function (result) {
-            result.action.should.equal('START');
-            Processor.processMessage('YES', test_number, function (result) {
-                result.action.should.equal('tree');
-                assertHasTreeState(test_syndicate, test_number, 'yes', function (state) {
-                    done();
-                });
-            });
-        });
-    });
-
-    it('process a tree request (when subscribed to a non-tree syndicate too)', function (done) {
-        Processor.processMessage('START NOT_TREE', test_number, function (result) {
-            result.action.should.equal('START');
+    describe('Tree request - match expected', function() {
+        it('process a tree request', function (done) {
             Processor.processMessage('START TREE', test_number, function (result) {
                 result.action.should.equal('START');
                 Processor.processMessage('YES', test_number, function (result) {
@@ -119,11 +106,63 @@ describe('Message Tree Processor Unit Tests:', function() {
                 });
             });
         });
+
+        it('process two tree requests', function (done) {
+            Processor.processMessage('START TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('MAYBE', test_number, function (result) {
+                    result.action.should.equal('tree');
+                    assertHasTreeState(test_syndicate, test_number, 'maybe', function (state) {
+                        Processor.processMessage('OK', test_number, function (result) {
+                            result.action.should.equal('tree');
+                            assertHasTreeState(test_syndicate, test_number, 'lastchance', function (state) {
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        it('user subscribed to a tree and a non-tree', function (done) {
+            Processor.processMessage('START NOT_TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('START TREE', test_number, function (result) {
+                    result.action.should.equal('START');
+                    Processor.processMessage('YES', test_number, function (result) {
+                        result.action.should.equal('tree');
+                        assertHasTreeState(test_syndicate, test_number, 'yes', function (state) {
+                            done();
+                        });
+                    });
+                });
+            });
+        });
     });
 
-    it('process a tree request (when no tree subscribed to)', function (done) {
-        Processor.processMessage('START NOT_TREE', test_number, function (result) {
-            result.action.should.equal('START');
+    describe('Tree request - NO match expected', function() {
+
+        it('user subscribed to a tree but no match', function (done) {
+            Processor.processMessage('START TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('ASDF', test_number, function (result) {
+                    result.action.should.equal('help');
+                    done();
+                });
+            });
+        });
+
+        it('user not subscribed to a tree', function (done) {
+            Processor.processMessage('START NOT_TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('YES', test_number, function (result) {
+                    result.action.should.equal('help');
+                    done();
+                });
+            });
+        });
+
+        it('user not subscribed to anything', function (done) {
             Processor.processMessage('YES', test_number, function (result) {
                 result.action.should.equal('help');
                 done();

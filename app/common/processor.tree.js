@@ -31,7 +31,7 @@ exports.parseCommand = function(msg_text, number, callback){
             if (syndicate.message_tree) {
                 //find the user's current node (or the tree root)
                 var node = Tree.nodeById(JSON.parse(syndicate.message_tree), subscription.tree_state);
-                console.dir('found node: '+node.id);
+                //console.dir('found node: '+node.id);
                 //use the command to determine the action.
                 node = Tree.chooseNext(node, msg_text);  //test match.
                 if (node) {
