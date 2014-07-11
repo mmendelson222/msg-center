@@ -121,6 +121,17 @@ describe('Message Tree Processor Unit Tests:', function() {
         });
     });
 
+    it('process a tree request (when no tree subscribed to)', function (done) {
+        Processor.processMessage('START NOT_TREE', test_number, function (result) {
+            result.action.should.equal('START');
+            Processor.processMessage('YES', test_number, function (result) {
+                result.action.should.equal('help');
+                done();
+            });
+        });
+    });
+
+
     afterEach(function(done) {
         Subscription.remove().exec();
         Syndicate.remove().exec();
