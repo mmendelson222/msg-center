@@ -100,17 +100,17 @@ exports.unsubscribe = function(syndicate, number, callback){
 
 
 //process subscribe or unsubscribe requests
-exports.subscribe = function(syndicate, number, callback){
-    Syndicate.find({'name':syndicate}, function(err, syndicates){
+exports.subscribe = function(syndicateName, number, callback){
+    Syndicate.find({'name':syndicateName}, function(err, syndicates){
         if (syndicates.length === 0) {
             return callback({
                 'action': 'error',
-                'data': syndicate,
-                'message': 'Sorry, there is no group called ' + syndicate + '.'
+                'data': syndicateName,
+                'message': 'Sorry, there is no group called ' + syndicateName + '.'
             });
         } else {
             var subscription = new Subscription();
-            subscription.syndicate = syndicate;
+            subscription.syndicate = syndicateName;
             subscription.number = number;
             subscription.save(function (err) {
                 if (err) {
@@ -119,22 +119,24 @@ exports.subscribe = function(syndicate, number, callback){
                         case 11001:
                             return callback({
                                 'action': 'error',
-                                'data': syndicate,
-                                'message': 'You are already subscribed to ' + syndicate
+                                'data': syndicateName,
+                                'message': 'You are already subscribed to ' + syndicateName
                             });
                         default:
                             return callback({
                                 'action': 'error',
-                                'data': syndicate,
+                                'data': syndicateName,
                                 'message': 'START failed with error: ' + err
                             });
                     }
 
                 } else {
+                    var syndicate = syndicates[0];
+                    var greet = syndicate.greetings.started.replace('%1', syndicateName);
                     return callback({
                         'action': 'START',
                         'data': syndicate,
-                        'message': 'You have subscribed to ' + syndicate + ' messages.'
+                        'message': greet
                     });
                 }
             });

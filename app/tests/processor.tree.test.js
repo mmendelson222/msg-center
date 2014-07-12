@@ -91,13 +91,15 @@ describe('Message Tree Processor Unit Tests:', function() {
 
             });
         });
-
     });
 
     describe('Tree request - match expected', function() {
         it('process a tree request', function (done) {
             Processor.processMessage('START TREE', test_number, function (result) {
                 result.action.should.equal('START');
+
+                //TODO: assert that the return message is the one from the Syndicate, not the tree.
+                //result.message.should.startwith("You have subscribed");
                 Processor.processMessage('YES', test_number, function (result) {
                     result.action.should.equal('tree');
                     assertHasTreeState(test_syndicate, test_number, 'yes', function (state) {
@@ -138,6 +140,26 @@ describe('Message Tree Processor Unit Tests:', function() {
                 });
             });
         });
+
+        it('process a tree request, then a reset', function (done) {
+            Processor.processMessage('START TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('MAYBE', test_number, function (result) {
+                    result.action.should.equal('tree');
+                    assertHasTreeState(test_syndicate, test_number, 'maybe', function (state) {
+                        Processor.processMessage('RESET', test_number, function (result) {
+                            result.message.should.equal('Reset was successful.');
+                            result.action.should.equal('tree');
+                            assertHasTreeState(test_syndicate, test_number, '', function (state) {
+                                done();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        //TODO: found that having a subscription which points to a nonexistent syndicate broke tree parsing.  Fixed the issue but maybe should have a test.
     });
 
     describe('Tree request - NO match expected', function() {
@@ -173,7 +195,7 @@ describe('Message Tree Processor Unit Tests:', function() {
 
     afterEach(function(done) {
         Subscription.remove().exec();
-        //Syndicate.remove().exec();
+        Syndicate.remove().exec();
         User.remove().exec();
         done();
     });
