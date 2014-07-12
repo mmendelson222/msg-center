@@ -24,8 +24,8 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 
 		// Remove existing Syndicate
 		$scope.remove = function( syndicate ) {
-			if ( syndicate ) { syndicate.$remove();
-
+			if ( syndicate ) {
+                syndicate.$remove();
 				for (var i in $scope.syndicates ) {
 					if ($scope.syndicates [i] === syndicate ) {
 						$scope.syndicates.splice(i, 1);
@@ -41,7 +41,6 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 		// Update existing Syndicate
 		$scope.update = function() {
 			var syndicate = $scope.syndicate;
-
 			syndicate.$update(function() {
 				$location.path('syndicates/' + syndicate._id);
 			}, function(errorResponse) {
@@ -58,7 +57,11 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 		$scope.findOne = function() {
 			$scope.syndicate = Syndicates.get({ 
 				syndicateId: $stateParams.syndicateId
-			});
+			}, null,
+            function(){
+                var o = JSON.parse($scope.syndicate.message_tree);
+                $scope.syndicate.message_tree = JSON.stringify(o, null, '\t');
+            });
         };
 	}
 ]);
