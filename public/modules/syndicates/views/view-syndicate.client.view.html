@@ -1,7 +1,8 @@
 <section data-ng-controller="SyndicatesController" data-ng-init="findOne()">
 	<div class="page-header">
 		<h1 data-ng-bind="syndicate.name"></h1>
-        <div data-ng-bind="syndicate.googleCalendar"></div>
+        <div data-ng-bind="syndicate.description"></div>
+        <div data-ng-bind="syndicate.calendar_id"></div>
         <div data-ng-bind="syndicate.message_tree"></div>
 	</div>
 	<div class="pull-right" data-ng-show="authentication.user._id == syndicate.user._id">

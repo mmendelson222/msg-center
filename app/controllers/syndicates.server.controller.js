@@ -37,7 +37,7 @@ var getErrorMessage = function(err) {
 exports.create = function(req, res) {
     var syndicate = new Syndicate(req.body);
     syndicate.user = req.user;
-
+    syndicate.name = syndicate.name.toUpperCase();
     if (syndicate.message_tree) {
         try {
             syndicate.message_tree = JSON.parse(syndicate.message_tree);
@@ -63,6 +63,9 @@ exports.create = function(req, res) {
  * Show the current Syndicate
  */
 exports.read = function(req, res) {
+    if (req.syndicate.message_tree) {
+        req.syndicate.message_tree = JSON.stringify(req.syndicate.message_tree);
+    }
 	res.jsonp(req.syndicate);
 };
 
@@ -73,6 +76,16 @@ exports.update = function(req, res) {
 	var syndicate = req.syndicate ;
 
 	syndicate = _.extend(syndicate , req.body);
+    syndicate.name = syndicate.name.toUpperCase();
+    if (syndicate.message_tree) {
+        try {
+            syndicate.message_tree = JSON.parse(syndicate.message_tree);
+        } catch (exception) {
+            return res.send(400, {
+                message: exception.message
+            });
+        }
+    }
 
 	syndicate.save(function(err) {
 		if (err) {

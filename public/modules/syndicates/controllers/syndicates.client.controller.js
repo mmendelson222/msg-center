@@ -10,8 +10,8 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 			// Create new Syndicate object
 			var syndicate = new Syndicates ({
 				name: this.name,
-                calendar_id: this.googleCalendar,
-                message_tree: this.messageTree
+                calendar_id: this.calendar_id,
+                message_tree: this.message_tree
 			});
 
 			// Redirect after save
@@ -20,9 +20,6 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
-
-			// Don't Clear form fields
-			// this.name = '';
 		};
 
 		// Remove existing Syndicate
@@ -43,9 +40,7 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 
 		// Update existing Syndicate
 		$scope.update = function() {
-			var syndicate = $scope.syndicate ;
-            syndicate.calendar_id=this.googleCalendar;
-            syndicate.message_tree=this.messageTree;
+			var syndicate = $scope.syndicate;
 
 			syndicate.$update(function() {
 				$location.path('syndicates/' + syndicate._id);
@@ -64,6 +59,6 @@ angular.module('syndicates').controller('SyndicatesController', ['$scope', '$sta
 			$scope.syndicate = Syndicates.get({ 
 				syndicateId: $stateParams.syndicateId
 			});
-		};
+        };
 	}
 ]);

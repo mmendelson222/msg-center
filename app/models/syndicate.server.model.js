@@ -31,6 +31,11 @@ var SyndicateSchema = new Schema({
         unique: true,
 		trim: true
 	},
+    description: {
+        type: String,
+        default: '',
+        trim: true
+    },
     greetings: {
         started: {
             type: String,
