@@ -1,0 +1,33 @@
+{
+    "id": "root",
+    "text": "Welcome.  Yes or no?",
+    "nodes": [
+        {
+            "id" : "yes",
+            "text": "You chose yes",
+            "match": "yes"
+        },
+        {
+            "id": "no",
+            "text": "You chose no",
+            "match": "no"
+        },
+        {
+            "id": "maybe",
+            "text": "This is your last chance - ok or you\"re done",
+            "match": "maybe",
+            "nodes": [
+                {
+                    "id": "lastchance",
+                    "text": "Good job!",
+                    "match": "ok"
+                },
+                {
+                    "id": "blewit",
+                    "text": "Too bad",
+                    "match": ".*"
+                }
+            ]
+        }
+    ]
+}
