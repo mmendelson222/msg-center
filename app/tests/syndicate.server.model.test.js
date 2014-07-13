@@ -65,7 +65,7 @@ describe('Syndicate Model Unit Tests:', function() {
             });
 
             it('should fail when attempting to save non-compliant JSON ', function (done) {
-                syndicate.message_tree = '{"JSON": true}';
+                syndicate.message_tree = {'JSON': true};
                 return syndicate.save(function (err) {
                     should.exist(err);
                     done();
@@ -73,7 +73,7 @@ describe('Syndicate Model Unit Tests:', function() {
             });
 
             it('should succeed when saving a valid tree ', function (done) {
-                syndicate.message_tree = '{"id": "root", "text":"here is some text"}';
+                syndicate.message_tree = {'id': 'root', 'text':'here is some text'};
                 return syndicate.save(function (err) {
                     should.not.exist(err);
                     done();
