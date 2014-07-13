@@ -8,22 +8,13 @@ var mongoose = require('mongoose'),
     Subscription = mongoose.model('Subscription'),
     _ = require('lodash');
 
-var processor = require('../common/message.processor');
+var Processor = require('../common/message.processor'),
+    Broadcaster = require('../common/sms.broadcaster');
 
-// Load the twilio module
 var twilio = require('twilio');
 
-// Create a new REST API client to make authenticated requests against the twilio back end
-var twilio_client = new twilio.RestClient();
-
-var twilioConfig = {
-    sid : 'TWILIO_ACCOUNT_SID',
-    token : 'TWILIO_AUTH_TOKEN',
-    number : 'TWILIO_NUMBER'
-};
-
 /**
- * Create a Message
+ * This is invoked when a message is received from Twilio.
  */
 exports.receive = function(req, res) {
     console.log('\nTwilio service request received: '+req.url);
@@ -31,7 +22,10 @@ exports.receive = function(req, res) {
     var text = req.body.Body;
     var number = req.body.From;
 
-    processor.processMessage(text, number, function(parsed){
+    //Invoke ProcessMessage to create a response.
+    Processor.processMessage(text, number, function(parsed){
+
+        //persist a record of the text and response to the database.
         var message = new Message({
             'text': text,
             'number': number,
@@ -40,6 +34,7 @@ exports.receive = function(req, res) {
         });
         message.save();
 
+        //Response goes back to Twilio and return message is sent.
         resp.sms(message.response);
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(resp.toString());
@@ -47,16 +42,13 @@ exports.receive = function(req, res) {
 };
 
 
+var sendTo = '3037154487';
 
 /**
- * Outoing Message
+ * Send a one-way outgoing message
  */
 exports.send = function(req, res) {
-
-    var sendTo = '3037154487',
-        sentFrom = '7203167666',
-        user = req.user;
-
+    var user = req.user;
     var message = new Message({
         'text': req.body.text,
         'number': sendTo,
@@ -68,33 +60,31 @@ exports.send = function(req, res) {
     });
     message.save();
 
-    // Pass in parameters to the REST API using an object literal notation. The
-    // REST client will handle authentication and response serialzation for you.
-    twilio_client.sms.messages.create({
-        to: sendTo,
-        from: sentFrom,
-        body:message.text
-    }, function(err, messageInfo) {
-        // The HTTP request to Twilio will run asynchronously. This callback
-        // function will be called when a response is received from Twilio
-        // The 'error" variable will contain error information, if any.
-        // If the request was successful, this value will be "falsy"
+    //Not sure if this would break mongoose validation.  Test this later, but in the meantime, add this after save.
+    message.sentFrom = '7203167666';
 
-        if (err) {
-            return res.send(400, {
-                message: err
-            });
-        } else {
-            // The second argument to the callback will contain the information
-            // sent back by Twilio for the request. In this case, it is the
-            // information about the text messsage you just sent:
-            // console.log(messageInfo.sid);
-            // console.log('Message sent on:');
-            // console.log(messageInfo.dateCreated);
-            res.jsonp({'message':'Message '+messageInfo.status+' to '+messageInfo.to});
+    Broadcaster.sendMessage(message,
+        function (err, messageInfo){
+            // The HTTP request to Twilio will run asynchronously. This callback
+            // function will be called when a response is received from Twilio
+            // The 'error" variable will contain error information, if any.
+            // If the request was successful, this value will be "falsy"
+
+            if (err) {
+                return res.send(400, {
+                    message: err
+                });
+            } else {
+                // The second argument to the callback will contain the information
+                // sent back by Twilio for the request. In this case, it is the
+                // information about the text messsage you just sent:
+                // console.log(messageInfo.sid);
+                // console.log('Message sent on:');
+                // console.log(messageInfo.dateCreated);
+                res.jsonp({'message':'Message '+messageInfo.status+' to '+messageInfo.to});
+            }
         }
-
-    });
+    );
 };
 
 /**
