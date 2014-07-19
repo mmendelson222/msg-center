@@ -56,6 +56,26 @@ function findNodeById(node, id){
     return null; //not found.
 }
 
+//recurse the tree to find a node by id, then return the PARENT.
+//to support the back command
+exports.findParentNode = function (node, id, parent){
+    if (node.id === id) {
+        if (parent) {
+            return parent;
+        } else {
+            //'There is no parent for this node.';
+            return node;
+        }
+    } else {
+        if (!node.nodes) return null;  //make sure this has nodes
+        for (var i=0; i<node.nodes.length; i++){
+            var foundNode = exports.findParentNode(node.nodes[i], id, node);
+            if (foundNode) return foundNode;
+        }
+    }
+    return null; //not found.
+};
+
 exports.nodeById = function(tree, id){
     if (!id)
         return tree;
@@ -64,7 +84,7 @@ exports.nodeById = function(tree, id){
 
 exports.chooseNext = function(node, userInput){
     if (!node.nodes)
-        throw 'No child nodes.';
+        throw 'You have nowhere to go from here.  Your options are RESET or BACK.';
     for (var i=0; i<node.nodes.length; i++){
         var reg = new RegExp(node.nodes[i].match, 'i');
         if (reg.test(userInput))

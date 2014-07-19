@@ -1,0 +1,43 @@
+{
+    "id": "root",
+    "text": "Welcome to the BierGarten.  Would you like Bier or Brat?",
+    "nodes": [
+        {
+            "id" : "Bier",
+            "text": "OK then.  Pils, Lager or Coors",
+            "match": "Bier",
+			"nodes": [
+                {
+                    "id": "Pils",
+                    "text": "This beer is good. RESET to try again.",
+                    "match": "Pils"
+                },
+                {
+                    "id": "Lager",
+                    "text": "The Lager is even better than the Pils.  RESET to try again.",
+                    "match": "Lager"
+                },
+                {
+                    "id": "Coors",
+                    "text": "Oh jeez, really?  I think you're in the wrong bar.  RESET to try again.",
+                    "match": "Coors"
+                },
+				{
+                    "id": "needreset",
+                    "text": "You need to choose from the menu.  Bier, Brat or Coors?  RESET, then try again.",
+                    "match": ".*"
+                }
+            ]
+        },
+        {
+            "id": "Brat",
+            "text": "Well good, we have several kinds of Brat.  They are all excellent.  RESET to try again.",
+            "match": "no"
+        },
+		{
+            "id": "other",
+            "text": "That is not on the menu. RESET to try again.",
+            "match": ".*"
+        }
+    ]
+}

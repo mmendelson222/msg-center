@@ -20,27 +20,27 @@ var data =
     text: 'Welcome.  Yes or no?',
     nodes: [
         {
-            id : 'yes',
+            id : 'yesState',
             text: 'You chose yes',
             match: 'yes'
         },
         {
-            id: 'no',
+            id: 'noState',
             text: 'You chose no',
             match: 'no'
         },
         {
-            id: 'maybe',
+            id: 'maybeState',
             text: 'This is your last chance - ok or you\'re done',
             match: 'maybe',
             nodes: [
                 {
-                    id: 'lastchance',
+                    id: 'okState',
                     text: 'Good job!',
                     match: 'ok'
                 },
                 {
-                    id: 'blewit',
+                    id: 'blewitState',
                     text: 'Too bad',
                     match: '.*'
                 }
@@ -102,7 +102,7 @@ describe('Message Tree Processor Unit Tests:', function() {
                 //result.message.should.startwith("You have subscribed");
                 Processor.processMessage('YES', test_number, function (result) {
                     result.action.should.equal('tree');
-                    assertHasTreeState(test_syndicate, test_number, 'yes', function (state) {
+                    assertHasTreeState(test_syndicate, test_number, 'yesState', function (state) {
                         done();
                     });
                 });
@@ -114,10 +114,10 @@ describe('Message Tree Processor Unit Tests:', function() {
                 result.action.should.equal('START');
                 Processor.processMessage('MAYBE', test_number, function (result) {
                     result.action.should.equal('tree');
-                    assertHasTreeState(test_syndicate, test_number, 'maybe', function (state) {
+                    assertHasTreeState(test_syndicate, test_number, 'maybeState', function (state) {
                         Processor.processMessage('OK', test_number, function (result) {
                             result.action.should.equal('tree');
-                            assertHasTreeState(test_syndicate, test_number, 'lastchance', function (state) {
+                            assertHasTreeState(test_syndicate, test_number, 'okState', function (state) {
                                 done();
                             });
                         });
@@ -133,7 +133,7 @@ describe('Message Tree Processor Unit Tests:', function() {
                     result.action.should.equal('START');
                     Processor.processMessage('YES', test_number, function (result) {
                         result.action.should.equal('tree');
-                        assertHasTreeState(test_syndicate, test_number, 'yes', function (state) {
+                        assertHasTreeState(test_syndicate, test_number, 'yesState', function (state) {
                             done();
                         });
                     });
@@ -141,12 +141,13 @@ describe('Message Tree Processor Unit Tests:', function() {
             });
         });
 
-        it('process a tree request, then a reset', function (done) {
+
+        it('process a tree request, then a RESET request', function (done) {
             Processor.processMessage('START TREE', test_number, function (result) {
                 result.action.should.equal('START');
                 Processor.processMessage('MAYBE', test_number, function (result) {
                     result.action.should.equal('tree');
-                    assertHasTreeState(test_syndicate, test_number, 'maybe', function (state) {
+                    assertHasTreeState(test_syndicate, test_number, 'maybeState', function (state) {
                         Processor.processMessage('RESET', test_number, function (result) {
                             result.message.should.equal('Reset was successful.');
                             result.action.should.equal('tree');
@@ -158,6 +159,25 @@ describe('Message Tree Processor Unit Tests:', function() {
                 });
             });
         });
+
+        it('process two tree requests, then a BACK request', function (done) {
+            Processor.processMessage('START TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('MAYBE', test_number, function (result) {
+                    assertHasTreeState(test_syndicate, test_number, 'maybeState', function (state) {
+                        Processor.processMessage('OK', test_number, function (result) {
+                            assertHasTreeState(test_syndicate, test_number, 'okState', function (state) {
+                                Processor.processMessage('BACK', test_number, function (result) {
+                                    console.dir(JSON.stringify(result));
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
 
         //TODO: found that having a subscription which points to a nonexistent syndicate broke tree parsing.  Fixed the issue but maybe should have a test.
     });

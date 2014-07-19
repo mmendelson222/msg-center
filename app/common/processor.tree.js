@@ -33,7 +33,12 @@ function parseTreeDirective(msg_text, number, callback){
                         var node = Tree.nodeById(syndicate.message_tree, subscription.tree_state);
                         //console.dir('found node: '+node.id);
                         //use the command to determine the action.
-                        node = Tree.chooseNext(node, msg_text);  //test match.
+
+                        if (msg_text === 'BACK') {
+                            node = Tree.findParentNode(node, msg_text);
+                        } else {
+                            node = Tree.chooseNext(node, msg_text);  //test match.
+                        }
                         if (node) {
                             treeSuccess = true;
                             //request matched this node.
@@ -95,10 +100,12 @@ function handleReset(number, callback){
 
 exports.parseCommand = function(msg_text, number, callback){
     //check for reserved command(s) related to tree.
-    if (msg_text.trim().toUpperCase() === 'RESET'){
+    var msg = msg_text.trim().toUpperCase();
+    if (msg === 'RESET'){
         handleReset(number, callback);
     } else {
-        parseTreeDirective(msg_text, number, callback);
+        //"BACK" is handled within this.
+        parseTreeDirective(msg, number, callback);
     }
 };
 

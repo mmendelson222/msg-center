@@ -135,6 +135,17 @@ describe('Message Tree structure tests', function() {
         done();
     });
 
+    it('gets the parent tree node.', function(done) {
+        var node = Tree.findParentNode(data, 'lastchance');
+        node.id.should.equal('maybe');
+
+        //if attempting to move back from the root, just return the root.
+        node = Tree.findParentNode(data, 'root');
+        node.id.should.equal('root');
+        done();
+    });
+
+
     it('chooses the next node based on user input', function(done) {
         var node = data; //this is the root node
         node = Tree.chooseNext(node, 'no');
