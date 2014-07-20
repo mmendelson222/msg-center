@@ -22,25 +22,48 @@ function parseTreeDirective(msg_text, number, callback){
         })
         .on('data', function (subscription) {
             numFound++;
-            //console.dir('found '+JSON.stringify(subscription));
 
             Syndicate.findOne({'name': subscription.syndicate}, function (err, syndicate) {
-                //console.dir('found '+syndicate.name);
                 numProcessed++;
-                if (syndicate) {  //undefined if sydicate indicated has been removed.
+                if (syndicate) {  //undefined if syndicate indicated has been removed.
                     if (syndicate.message_tree) {
                         var node;
+                        var rtnMessage;
+
                         //use the command to determine the action.
                         if (msg_text === 'BACK') {
                             node = Tree.findParentNode(syndicate.message_tree, subscription.tree_state);
-                            //console.dir("found node "+node.id);
+                            rtnMessage = node.text;
                         } else {
                             //find the user's current node (or the tree root)
                             node = Tree.nodeById(syndicate.message_tree, subscription.tree_state);
-                            node = Tree.chooseNext(node, msg_text);  //test match.
+                            //find node based on text
+                            var matchedNode = Tree.chooseNext(node, msg_text);
+                            if (matchedNode) {
+                                rtnMessage = matchedNode.text;
+                                //if below is false, we stay on the parent node (bounceback)
+                                if (matchedNode.id || matchedNode.next) {
+                                    node = matchedNode;
+                                }
+                            } else {
+                                //no match
+                                node = null;
+                            }
                         }
+
                         if (node) {
                             treeSuccess = true;
+                            //handle cases here:
+                            //show message and stay (!node.id);
+                            //use message from current node but navigate to new node (action=usenodes)
+                            while (node.next)  {
+                                var nextNode = Tree.nodeById(syndicate.message_tree, node.next);
+                                if (node.action  !== 'usenodes'){
+                                    rtnMessage += ' ' + nextNode.text;
+                                }
+                                node = nextNode;
+                            }
+
                             //request matched this node.
                             var conditions = {number: number, syndicate: syndicate.name};
                             var update = { $set: { tree_state: node.id}};
@@ -48,7 +71,7 @@ function parseTreeDirective(msg_text, number, callback){
                                 return callback({
                                     'action': 'tree',
                                     'data': node.id,
-                                    'message': node.text
+                                    'message': rtnMessage
                                 });
                             });
                         }
