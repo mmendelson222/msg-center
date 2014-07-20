@@ -10,45 +10,12 @@ var Tree = require('../common/message.tree');
  * Globals
  */
 var tree;
-var data =
-{
-    id: 'root',
-    text: 'Welcome.  Yes or no?',
-    nodes: [
-        {
-            id : 'yes',
-            text: 'You chose yes',
-            match: 'yes'
-        },
-        {
-            id: 'no',
-            text: 'You chose no',
-            match: 'no'
-        },
-        {
-            id: 'maybe',
-            text: 'This is your last chance - ok or you\'re done',
-            match: 'maybe',
-            nodes: [
-                {
-                    id: 'lastchance',
-                    text: 'Good job!',
-                    match: 'ok'
-                },
-                {
-                    id: 'blewit',
-                    text: 'Too bad',
-                    match: '.*'
-                }
-            ]
-        }
-    ]
-};
+var data = require('./data/tree.sample.json');
 
 //uncomment below to examine errors.
 function showErrors(errors){
     if (!errors) return;
-    //console.error(errors.join(', '));
+    console.error(errors.join(', '));
 }
 
 /**
@@ -120,13 +87,13 @@ describe('Message Tree structure tests', function() {
     });
 
     it('gets the appropriate tree node.', function(done) {
-        var node = Tree.nodeById(data, 'yes');
+        var node = Tree.nodeById(data, 'yesState');
         node.text.should.equal('You chose yes');
 
-        node = Tree.nodeById(data, 'no');
+        node = Tree.nodeById(data, 'noState');
         node.text.should.equal('You chose no');
 
-        node = Tree.nodeById(data, 'lastchance');
+        node = Tree.nodeById(data, 'okState');
         node.text.should.equal('Good job!');
 
         //return the root node if null or undefined.
@@ -136,8 +103,8 @@ describe('Message Tree structure tests', function() {
     });
 
     it('gets the parent tree node.', function(done) {
-        var node = Tree.findParentNode(data, 'lastchance');
-        node.id.should.equal('maybe');
+        var node = Tree.findParentNode(data, 'okState');
+        node.id.should.equal('maybeState');
 
         //if attempting to move back from the root, just return the root.
         node = Tree.findParentNode(data, 'root');
@@ -148,13 +115,13 @@ describe('Message Tree structure tests', function() {
 
     it('chooses the next node based on user input', function(done) {
         var node = data; //this is the root node
-        node = Tree.chooseNext(node, 'no');
+        node = Tree.chooseNext(node, 'noState');
         if (!node)
             throw 'Choice does not match.';
         ('You chose no').should.equal(node.text);
 
-        var maybeNode = Tree.nodeById(data, 'maybe');
-        var okNode = Tree.chooseNext(maybeNode, 'ok');
+        var maybeNode = Tree.nodeById(data, 'maybeState');
+        var okNode = Tree.chooseNext(maybeNode, 'okState');
         ('Good job!').should.equal(okNode.text);
 
         var failNode = Tree.chooseNext(maybeNode, 'oh no');

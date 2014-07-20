@@ -5,6 +5,7 @@
 
 var treeIntegrityErrors;
 var allNodes;
+var nextIds;
 
 //recurse the tree to find a node by id.
 function treeNodeIntegrity(node){
@@ -12,11 +13,27 @@ function treeNodeIntegrity(node){
         treeIntegrityErrors.push('Node id '+node.id+ ' is used more than once');
 
     //rules for ALL nodes.
+
+    //if no id, then this node is simply for message display - we can't reside here or go further.
+    //there should be no child nodes.
     if (!node.hasOwnProperty('id')){
-        treeIntegrityErrors.push('At least one node missing id');
+        if (node.nodes) {
+            treeIntegrityErrors.push('Found a node node missing id, but with child nodes');
+        }
     }
+
+    //if a node doesn't have text, it must route to a next (a valid id)
     if (!node.hasOwnProperty('text')){
-        treeIntegrityErrors.push('Node '+node.id+ ' is missing text');
+        if (!node.next) {
+            treeIntegrityErrors.push('Node ' + node.id + ' is missing text');
+        }
+    }
+
+    if (node.next){
+        nextIds.push(node.next);  //so we can check for validity later.
+        if (node.nodes) {
+            treeIntegrityErrors.push('A node with a "next" property has child nodes (which will never be hit)');
+        }
     }
 
     if (node.nodes) {
@@ -33,7 +50,9 @@ function treeNodeIntegrity(node){
 exports.treeIntegrity = function(tree){
     treeIntegrityErrors = [];
     allNodes = [];
+    nextIds = [];
     treeNodeIntegrity(tree);
+    //check nextIds for validity.
     if (treeIntegrityErrors.length === 0)
         return null;
     else

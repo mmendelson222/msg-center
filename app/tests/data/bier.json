@@ -1,43 +1,89 @@
 {
     "id": "root",
-    "text": "Welcome to the BierGarten.  Would you like Bier or Brat?",
+    "text": "Welcome to the Biergarten.  Would you like Beer or Food?",
     "nodes": [
         {
-            "id" : "Bier",
-            "text": "OK then.  Pils, Lager or Coors",
-            "match": "Bier",
+            "id" : "Beer",
+            "text": "The beer here is excellent. Pils, Lager or Coors.  Or let me know if you\'d rather have food.",
+            "match": "Beer",
 			"nodes": [
                 {
-                    "id": "Pils",
-                    "text": "This beer is good. RESET to try again.",
-                    "match": "Pils"
+                    "text": "This beer is good. ",
+                    "match": "Pils",
+                    "next": "anotherOrder"
                 },
                 {
-                    "id": "Lager",
-                    "text": "The Lager is even better than the Pils.  RESET to try again.",
-                    "match": "Lager"
+                    "text": "The Lager is even better than the Pils.",
+                    "match": "Lager",
+                    "next": "anotherOrder"
                 },
                 {
-                    "id": "Coors",
-                    "text": "Oh jeez, really?  I think you're in the wrong bar.  RESET to try again.",
-                    "match": "Coors"
+                    "text": "Oh jeez, really?  I think you're in the wrong bar.  Order something else.",
+                    "match": "Coors",
+                    "next": "anotherOrder"
+                },
+                {
+                    "match": "Food",
+                    "next": "Food"
                 },
 				{
-                    "id": "needreset",
-                    "text": "You need to choose from the menu.  Bier, Brat or Coors?  RESET, then try again.",
+                    "text": "You need to choose from the menu.  Bier, Brat or Coors?",
                     "match": ".*"
                 }
             ]
         },
         {
-            "id": "Brat",
-            "text": "Well good, we have several kinds of Brat.  They are all excellent.  RESET to try again.",
-            "match": "no"
+            "id":"Food",
+            "text": "For food, we have Fish, Sausage or Pretzels",
+            "nodes": [
+                {
+                    "id": "Sausage",
+                    "text": "Well good, we have Bratwurst, Bauernwurst or  Knackwurst.  The first couple of letters should do it.",
+                    "match": "brat",
+                    "nodes": [
+                        {
+                            "id": "Brat",
+                            "text": "A classic choice.  Pork Sausage, Caraway & Garlic.",
+                            "match": "Brat"
+                        },
+                        {
+                            "id": "Bauernwurst",
+                            "text": "This is made with smoked pork and veal. ",
+                            "match": "bau"
+                        },
+                        {
+                            "id": "Knackwurst",
+                            "text": "Made with veal, pork, & fresh garlic.  Excellent choice.",
+                            "match": "kna"
+                        },
+                        {
+                            "text": "That doesn't sound like a sausage to me.  Try again or use 'back' to try something else",
+                            "match": ".*"
+                        }
+                    ]
+                },
+                {
+                    "text": "That is not on the menu.",
+                    "match": ".*"
+                }
+            ]
         },
-		{
-            "id": "other",
-            "text": "That is not on the menu. RESET to try again.",
-            "match": ".*"
+        {
+            "id":"Done",
+            "text":"Hey, thanks for stopping by!",
+            "nodes":[
+                {
+                    "text": "1355 H Street Northeast, Washington, DC 20002  (202) 388-4085 info@biergartenhaus.com",
+                    "match":"A"
+                }
+            ]
+
+        },
+        {
+            "id":"anotherOrder",
+            "text": "Would you like to order something else (Beer or Food)?  Or maybe you're  'done'?",
+            "next": "root",
+            "action": "usenodes"
         }
     ]
 }

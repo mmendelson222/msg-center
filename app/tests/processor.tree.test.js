@@ -14,40 +14,7 @@ var user, syndicate;
 var test_number = '000-000-0000';
 var test_syndicate = 'TREE';
 
-var data =
-{
-    id: 'root',
-    text: 'Welcome.  Yes or no?',
-    nodes: [
-        {
-            id : 'yesState',
-            text: 'You chose yes',
-            match: 'yes'
-        },
-        {
-            id: 'noState',
-            text: 'You chose no',
-            match: 'no'
-        },
-        {
-            id: 'maybeState',
-            text: 'This is your last chance - ok or you\'re done',
-            match: 'maybe',
-            nodes: [
-                {
-                    id: 'okState',
-                    text: 'Good job!',
-                    match: 'ok'
-                },
-                {
-                    id: 'blewitState',
-                    text: 'Too bad',
-                    match: '.*'
-                }
-            ]
-        }
-    ]
-};
+var data = require('./data/tree.sample.json');
 
 function assertHasTreeState(syndicate, number, expectedValue, getTreeState){
     Subscription.findOne({'syndicate':syndicate, 'number':number}, function(err, subscription){

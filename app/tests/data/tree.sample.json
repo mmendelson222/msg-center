@@ -3,27 +3,27 @@
     "text": "Welcome.  Yes or no?",
     "nodes": [
         {
-            "id" : "yes",
+            "id" : "yesState",
             "text": "You chose yes",
             "match": "yes"
         },
         {
-            "id": "no",
+            "id": "noState",
             "text": "You chose no",
             "match": "no"
         },
         {
-            "id": "maybe",
-            "text": "This is your last chance - ok or you\"re done",
+            "id": "maybeState",
+            "text": "This is your last chance - ok or you're done",
             "match": "maybe",
             "nodes": [
                 {
-                    "id": "lastchance",
+                    "id": "okState",
                     "text": "Good job!",
                     "match": "ok"
                 },
                 {
-                    "id": "blewit",
+                    "id": "blewitState",
                     "text": "Too bad",
                     "match": ".*"
                 }
