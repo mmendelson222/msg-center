@@ -83,7 +83,6 @@ describe('Message Tree Processor Unit Tests:', function() {
                     result.action.should.equal('tree');
                     assertHasTreeState(test_syndicate, test_number, 'maybeState', function (state) {
                         Processor.processMessage('OK', test_number, function (result) {
-                            result.action.should.equal('tree');
                             assertHasTreeState(test_syndicate, test_number, 'okState', function (state) {
                                 done();
                             });
@@ -135,8 +134,9 @@ describe('Message Tree Processor Unit Tests:', function() {
                         Processor.processMessage('OK', test_number, function (result) {
                             assertHasTreeState(test_syndicate, test_number, 'okState', function (state) {
                                 Processor.processMessage('BACK', test_number, function (result) {
-                                    console.dir(JSON.stringify(result));
-                                    done();
+                                    assertHasTreeState(test_syndicate, test_number, 'maybeState', function (state) {
+                                        done();
+                                    });
                                 });
                             });
                         });

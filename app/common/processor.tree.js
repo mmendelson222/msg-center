@@ -29,14 +29,14 @@ function parseTreeDirective(msg_text, number, callback){
                 numProcessed++;
                 if (syndicate) {  //undefined if sydicate indicated has been removed.
                     if (syndicate.message_tree) {
-                        //find the user's current node (or the tree root)
-                        var node = Tree.nodeById(syndicate.message_tree, subscription.tree_state);
-                        //console.dir('found node: '+node.id);
+                        var node;
                         //use the command to determine the action.
-
                         if (msg_text === 'BACK') {
-                            node = Tree.findParentNode(node, msg_text);
+                            node = Tree.findParentNode(syndicate.message_tree, subscription.tree_state);
+                            //console.dir("found node "+node.id);
                         } else {
+                            //find the user's current node (or the tree root)
+                            node = Tree.nodeById(syndicate.message_tree, subscription.tree_state);
                             node = Tree.chooseNext(node, msg_text);  //test match.
                         }
                         if (node) {

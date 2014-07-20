@@ -17,7 +17,7 @@ var biergarten = require('./data/bier.json');
 //uncomment below to examine errors.
 function showErrors(errors){
     if (!errors.length) return;
-    console.error(errors.join(', '));
+    //console.error(errors.join(', '));
 }
 
 /**
