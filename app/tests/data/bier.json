@@ -4,7 +4,7 @@
     "nodes": [
         {
             "id" : "Beer",
-            "text": "The beer here is excellent. Pils, Lager or Coors.  Or let me know if you\'d rather have food.",
+            "text": "The beer here is excellent. Pils, Lager or Coors.  Or let me know if you'd rather have food.",
             "match": "Beer",
 			"nodes": [
                 {
@@ -71,6 +71,7 @@
         {
             "id":"Done",
             "text":"Hey, thanks for stopping by!  Choose address, credits or reset to play again.",
+            "match": "done",
             "nodes":[
                 {
                     "text": "Biergartenhaus 1355 H Street Northeast, Washington, DC 20002  (202) 388-4085 info@biergartenhaus.com",

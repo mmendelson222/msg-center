@@ -78,7 +78,6 @@ exports.treeIntegrity = function(tree){
    for (var i=0; i<nextIds.length; i++){
         var node = nextIds[i];
         jumpIds.push(node.next);
-        console.dir(allNodes.join(','));
         if (allNodes.indexOf(node.next)<0){
             treeIntegrityErrors.push('The \'next\' directive for node ' + node.id + ' does not point to a valid node.');
         }

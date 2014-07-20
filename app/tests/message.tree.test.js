@@ -6,16 +6,18 @@
 var should = require('should');
 var Tree = require('../common/message.tree');
 
+
 /**
  * Globals
  */
 var tree;
 var data = require('./data/tree.sample.json');
+var biergarten = require('./data/bier.json');
 
 //uncomment below to examine errors.
 function showErrors(errors){
     if (!errors.length) return;
-    //console.error(errors.join(', '));
+    console.error(errors.join(', '));
 }
 
 /**
@@ -129,6 +131,7 @@ describe('Message Tree structure tests', function() {
             var errors = Tree.treeIntegrity(tree);
             showErrors(errors);
             errors.length.should.equal(1);
+            errors[0].should.startWith('Node hello will never be reached');
             done();
         });
     });
@@ -175,6 +178,15 @@ describe('Message Tree structure tests', function() {
         ('Too bad').should.equal(failNode.text);
 
         done();
+    });
+
+    describe('Biergarten tests tests', function() {
+        it('is valid ', function (done) {
+            var errors = Tree.treeIntegrity(biergarten);
+            showErrors(errors);
+            errors.length.should.equal(0);
+            done();
+        });
     });
 
     afterEach(function(done) {
