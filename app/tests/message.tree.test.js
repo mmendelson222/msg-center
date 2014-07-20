@@ -14,8 +14,8 @@ var data = require('./data/tree.sample.json');
 
 //uncomment below to examine errors.
 function showErrors(errors){
-    if (!errors) return;
-    console.error(errors.join(', '));
+    if (!errors.length) return;
+    //console.error(errors.join(', '));
 }
 
 /**
@@ -34,54 +34,101 @@ describe('Message Tree structure tests', function() {
                 id: 'root',
                 text: 'Welcome.  Yes or no?',
                 nodes: [
-                    {id: 'node', text: 'this is the node', match: /mmm/}
+                    {id: 'node', text: 'this is the node', match: 'mmm'}
                 ]
             };
             var errors = Tree.treeIntegrity(tree);
             showErrors(errors);
-            var junk = (errors === null).should.be.true;
+            errors.length.should.equal(0);
             done();
         });
 
-        it('is invalid because node has no match', function (done) {
+        it('is invalid because node missing id, but with child nodes', function (done) {
             var tree = {
                 id: 'root',
                 text: 'Welcome.  Yes or no?',
                 nodes: [
-                    {id: 'myID', text: 'this is the node'}
+                    {text: 'this is the node', match:'x', nodes: []}
                 ]
             };
             var errors = Tree.treeIntegrity(tree);
             showErrors(errors);
             errors.length.should.equal(1);
+            errors[0].should.startWith('Found a node missing id');
             done();
         });
 
-        it('is invalid because node id is reused', function (done) {
+        it('is invalid because node id is used more than once', function (done) {
             var tree = {
                 id: 'root',
                 text: 'Welcome.  Yes or no?',
                 nodes: [
-                    {id: 'root', text: 'this is the node'}
+                    {id: 'root', text: 'this is the node', match: 'x'}
                 ]
             };
             var errors = Tree.treeIntegrity(tree);
             showErrors(errors);
             errors.length.should.equal(1);
+            errors[0].should.endWith('is used more than once');
             done();
         });
 
-        it('is invalid because node missing everything', function (done) {
+        it('is invalid because node needs either text or a \'next\' property', function (done) {
             var tree = {
                 id: 'root',
                 text: 'Welcome.  Yes or no?',
                 nodes: [
-                    {}
+                    {id: 'hello', match: 'x'}
                 ]
             };
             var errors = Tree.treeIntegrity(tree);
             showErrors(errors);
-            errors.length.should.equal(3);
+            errors.length.should.equal(1);
+            errors[0].should.endWith('either text or a \'next\' property.');
+            done();
+        });
+
+        it('is invalid because node contains an invalid action', function (done) {
+            var tree = {
+                id: 'root',
+                text: 'Welcome.  Yes or no?',
+                nodes: [
+                    {id: 'hello', next: 'root', match:'x', action: 'blah'}
+                ]
+            };
+            var errors = Tree.treeIntegrity(tree);
+            showErrors(errors);
+            errors.length.should.equal(1);
+            errors[0].should.startWith('Node hello has an invalid action');
+            done();
+        });
+
+        it('is invalid \'next\' directive does not point to a valid node', function (done) {
+            var tree = {
+                id: 'root',
+                text: 'Welcome.  Yes or no?',
+                nodes: [
+                    {id: 'hello', match:'x', next: 'blah'}
+                ]
+            };
+            var errors = Tree.treeIntegrity(tree);
+            showErrors(errors);
+            errors.length.should.equal(1);
+            errors[0].should.startWith('The \'next\' directive');
+            done();
+        });
+
+        it('is invalid because it will never be reached', function (done) {
+            var tree = {
+                id: 'root',
+                text: 'Welcome.  Yes or no?',
+                nodes: [
+                    {id: 'hello', next: 'root'}
+                ]
+            };
+            var errors = Tree.treeIntegrity(tree);
+            showErrors(errors);
+            errors.length.should.equal(1);
             done();
         });
     });

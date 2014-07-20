@@ -70,11 +70,15 @@
         },
         {
             "id":"Done",
-            "text":"Hey, thanks for stopping by!",
+            "text":"Hey, thanks for stopping by!  Choose address, credits or reset to play again.",
             "nodes":[
                 {
-                    "text": "1355 H Street Northeast, Washington, DC 20002  (202) 388-4085 info@biergartenhaus.com",
+                    "text": "Biergartenhaus 1355 H Street Northeast, Washington, DC 20002  (202) 388-4085 info@biergartenhaus.com",
                     "match":"A"
+                },
+                {
+                    "text": "Michael Mendelson wrote this tool.  You can contact me at 303-715-4487 or mmendelson@gmail.com",
+                    "match":"C"
                 }
             ]
 

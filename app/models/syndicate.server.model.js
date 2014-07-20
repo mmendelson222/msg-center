@@ -13,7 +13,7 @@ var ValidatorError =  require('mongoose/lib/error/validator');
 //This validator returns a specific error message.
 var validationErrors = function(json) {
     var errors = Tree.treeIntegrity(json);
-    if (errors){
+    if (errors.length){
         return errors.join(', ') + JSON.stringify(json);
     }
     return null;
