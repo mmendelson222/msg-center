@@ -63,8 +63,8 @@ describe('Message Tree Processor Unit Tests:', function() {
                 });
             });
         });
-        describe('Tree request - match expected', function() {
 
+        describe('Tree request - match expected', function() {
             it('process a tree request', function (done) {
                 Processor.processMessage('START TREE', test_number, function (result) {
                     result.action.should.equal('START');
@@ -213,6 +213,12 @@ describe('Message Tree Processor Unit Tests:', function() {
                     });
 
                 });
+            });
+        });
+        it('greets us with the first node on the tree', function (done) {
+            Processor.processMessage('START TREE', test_number, function (result) {
+                result.message.should.startWith('Welcome to the Biergarten');
+                done();
             });
         });
 

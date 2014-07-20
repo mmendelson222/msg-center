@@ -132,7 +132,12 @@ exports.subscribe = function(syndicateName, number, callback){
 
                 } else {
                     var syndicate = syndicates[0];
-                    var greet = syndicate.greetings.started.replace('%1', syndicateName);
+                    var greet;
+                    if (syndicate.message_tree){
+                        greet = syndicate.message_tree.text;
+                    } else {
+                        greet = syndicate.greetings.started.replace('%1', syndicateName);
+                    }
                     return callback({
                         'action': 'START',
                         'data': syndicate,

@@ -38,13 +38,13 @@
             "nodes": [
                 {
                     "id": "Sausage",
-                    "text": "Well good, we have Bratwurst, Bauernwurst or  Knackwurst.  The first couple of letters should do it.",
-                    "match": "brat",
+                    "text": "Well good, we have Bratwurst, Bauernwurst or  Knackwurst.  You've probably had some beer, so the first three letters should do it.",
+                    "match": "saus",
                     "nodes": [
                         {
                             "id": "Brat",
                             "text": "A classic choice.  Pork Sausage, Caraway & Garlic.",
-                            "match": "Brat"
+                            "match": "Bra"
                         },
                         {
                             "id": "Bauernwurst",
@@ -58,7 +58,7 @@
                         },
                         {
                             "text": "That doesn't sound like a sausage to me.  Try again or use 'back' to try something else",
-                            "match": ".*"
+                            "match": "."
                         }
                     ]
                 },
