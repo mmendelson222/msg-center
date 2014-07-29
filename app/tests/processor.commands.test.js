@@ -114,15 +114,32 @@ describe('Message Processor Unit Tests:', function() {
     });
 
     describe('STOP (unsubscribe) requests', function() {
-        it('process an unsubscribe request', function (done) {
-            Processor.processMessage('START TEST', test_number, function () {
-                Processor.processMessage('STOP TEST', test_number, function (result) {
-                    should.exist(result);
-                    result.message.should.startWith('You have unsubscribed');
-                    result.action.should.equal('STOP');
-                    assertSubscriptionInDB('TEST', test_number, true, false, function () {
-                        done();
-                    });  //although we might merely deactivate in the future.
+        it('follow the subscribe/unsubscribe database indicators', function (done) {
+
+            //subscription not in the db.
+            assertSubscriptionInDB('TEST', test_number, false, false, function () {
+                Processor.processMessage('START TEST', test_number, function (result) {
+                    result.message.should.startWith('You have subscribed');
+
+                    //subscription in the db and active.
+                    assertSubscriptionInDB('TEST', test_number, true, true, function () {
+                        Processor.processMessage('STOP TEST', test_number, function (result) {
+                            should.exist(result);
+                            result.message.should.startWith('You have unsubscribed');
+                            result.action.should.equal('STOP');
+
+                            //subscription in the db and inactive active.
+                            assertSubscriptionInDB('TEST', test_number, true, false, function () {
+                                Processor.processMessage('START TEST', test_number, function () {
+
+                                    //subscription in the db and active.
+                                    assertSubscriptionInDB('TEST', test_number, true, false, function () {
+                                        done();
+                                    });
+                                });
+                            });
+                        });
+                    });
                 });
             });
         });

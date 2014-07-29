@@ -111,7 +111,7 @@ exports.subscribe = function(syndicateName, number, callback){
         } else {
             var subscription = new Subscription();
             Subscription.find({'syndicate':syndicateName, 'number': number}, function(err, subs) {
-                if (subs.length == 0) {
+                if (subs.length === 0) {
                     subscription.syndicate = syndicateName;
                     subscription.number = number;
                     subscription.save(function (err) {
