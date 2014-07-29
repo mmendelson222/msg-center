@@ -79,7 +79,7 @@ exports.unsubscribe = function(syndicate, number, callback){
                 'message': 'You are not a member of that group.'
             });
         } else {
-            Subscription.remove({'_id': subs[0]._id}, function (err) {
+            Subscription.update({'_id': subs[0]._id}, {'active' : false}, function (err) {
                 if (err) {
                     return callback({
                         'action': 'error',
@@ -110,38 +110,37 @@ exports.subscribe = function(syndicateName, number, callback){
             });
         } else {
             var subscription = new Subscription();
-            subscription.syndicate = syndicateName;
-            subscription.number = number;
-            subscription.save(function (err) {
-                if (err) {
-                    switch (err.code) {
-                        case 11000:
-                        case 11001:
-                            return callback({
-                                'action': 'error',
-                                'data': syndicateName,
-                                'message': 'You are already subscribed to ' + syndicateName
-                            });
-                        default:
+            Subscription.find({'syndicate':syndicateName, 'number': number}, function(err, subs) {
+                if (subs.length == 0) {
+                    subscription.syndicate = syndicateName;
+                    subscription.number = number;
+                    subscription.save(function (err) {
+                        if (err) {
                             return callback({
                                 'action': 'error',
                                 'data': syndicateName,
                                 'message': 'START failed with error: ' + err
                             });
-                    }
-
+                        } else {
+                            var syndicate = syndicates[0];
+                            var greet;
+                            if (syndicate.message_tree) {
+                                greet = syndicate.message_tree.text;
+                            } else {
+                                greet = syndicate.greetings.started.replace('%1', syndicateName);
+                            }
+                            return callback({
+                                'action': 'START',
+                                'data': syndicate,
+                                'message': greet
+                            });
+                        }
+                    });
                 } else {
-                    var syndicate = syndicates[0];
-                    var greet;
-                    if (syndicate.message_tree){
-                        greet = syndicate.message_tree.text;
-                    } else {
-                        greet = syndicate.greetings.started.replace('%1', syndicateName);
-                    }
                     return callback({
-                        'action': 'START',
-                        'data': syndicate,
-                        'message': greet
+                        'action': 'error',
+                        'data': syndicateName,
+                        'message': 'You are already subscribed to ' + syndicateName
                     });
                 }
             });

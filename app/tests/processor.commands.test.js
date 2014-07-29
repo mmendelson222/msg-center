@@ -14,16 +14,23 @@ var user, syndicate;
 var test_number = '000-000-0000';
 var test_name = 'John Doe X';
 
-function assertSubscriptionInDB(syndicate, number, shouldExist, done){
+function assertSubscriptionInDB(syndicate, number, shouldExist, shouldBeSubscribed, done){
     Subscription.find({'syndicate':syndicate, 'number':number}, function(err, results){
        (err === null).should.equal(true);
        if (shouldExist){
-           results.length.should.equal(1);
-           done();
+           results.length.should.equal(1, 'subscription should exist in database');
+           if (shouldBeSubscribed){
+               results[0].active.should.equal(true);
+           } else {
+               results[0].active.should.equal(false);
+           }
        } else {
-           results.length.should.equal(0);
-           done();
+           results.length.should.equal(0, 'subscription should not exist in database');
+           if (shouldBeSubscribed) {
+               should.fail('Conflicting test directives (should not exist + should be subscribed)');
+           }
        }
+        done();
     });
 }
 
@@ -68,7 +75,7 @@ describe('Message Processor Unit Tests:', function() {
                 should.exist(result);
                 result.message.should.startWith('You have subscribed');
                 result.action.should.equal('START');
-                assertSubscriptionInDB('TEST', test_number, true, function () {
+                assertSubscriptionInDB('TEST', test_number, true, true, function () {
                     done();
                 });
             });
@@ -113,7 +120,7 @@ describe('Message Processor Unit Tests:', function() {
                     should.exist(result);
                     result.message.should.startWith('You have unsubscribed');
                     result.action.should.equal('STOP');
-                    assertSubscriptionInDB('TEST', test_number, false, function () {
+                    assertSubscriptionInDB('TEST', test_number, true, false, function () {
                         done();
                     });  //although we might merely deactivate in the future.
                 });
