@@ -22,6 +22,10 @@ var SubscriptionSchema = new Schema({
 		required: 'Please fill syndicate name',
 		trim: true
 	},
+    active :{
+        type:Boolean,
+        default: true
+    },
     fullName:{
         type:String
     },

@@ -27,7 +27,7 @@
                     "next": "Food"
                 },
 				{
-                    "text": "You need to choose from the menu.  Bier, Brat or Coors?",
+                    "text": "You need to choose from the menu.  Pils, Lager or Coors?",
                     "match": ".*"
                 }
             ]
@@ -35,6 +35,7 @@
         {
             "id":"Food",
             "text": "For food, we have Fish, Sausage or Pretzels",
+            "match":"food",
             "nodes": [
                 {
                     "id": "Sausage",
@@ -63,7 +64,17 @@
                     ]
                 },
                 {
-                    "text": "That is not on the menu.",
+                    "text": "These pretzels are good.  Yum.",
+                    "match": "pret",
+                    "next": "anotherOrder"
+                },
+                {
+                    "text": "Who am I? My name is Ish. On my hand, I have a dish.  I had this dish to make me wish. When I wish to make a wish, I wave my hand with a big swish swish. Then I say \"I wish for fish.\"  Then I get fish right on my dish. So if you wish to wish your wish, you may swish for fish in my ish wish dish.",
+                    "match": "fish",
+                    "next": "anotherOrder"
+                },
+                {
+                    "text": "The only things on the food menu are sausage, pretzels and fish.",
                     "match": ".*"
                 }
             ]
@@ -86,7 +97,7 @@
         },
         {
             "id":"anotherOrder",
-            "text": "Would you like to order something else (Beer or Food)?  Or maybe you're  'done'?",
+            "text": "Would you like to order some more Beer or Food?  Or perhaps you're Done.",
             "next": "root",
             "action": "usenodes"
         }

@@ -119,9 +119,9 @@ describe('Message Tree Processor Unit Tests:', function() {
                         result.action.should.equal('tree');
                         assertHasTreeState(test_syndicate, test_number, 'maybeState', function (state) {
                             Processor.processMessage('RESET', test_number, function (result) {
-                                result.message.should.equal('Reset was successful.');
+                                result.message.should.startWith('Reset was successful.');
                                 result.action.should.equal('tree');
-                                assertHasTreeState(test_syndicate, test_number, '', function (state) {
+                                assertHasTreeState(test_syndicate, test_number, biergarten.id, function (state) {
                                     done();
                                 });
                             });
@@ -246,14 +246,35 @@ describe('Message Tree Processor Unit Tests:', function() {
                     Processor.processMessage('Pils', test_number, function (result) {
                         //console.dir(JSON.stringify(result));
                         result.message.should.startWith('This beer is good');
-                        result.message.should.endWith('Or maybe you\'re  \'done\'?');
+                        result.message.should.endWith('Or perhaps you\'re Done.');
                         assertHasTreeState(test_syndicate, test_number, 'root', function (state) {
-                            done();
+                            Processor.processMessage('RESET', test_number, function (result) {
+                                result.message.should.startWith('Reset was successful.');
+                                result.action.should.equal('tree');
+                                assertHasTreeState(test_syndicate, test_number, biergarten.id, function (state) {
+                                    done();
+                                });
+                            });
                         });
                     });
                 });
             });
         });
+
+        it('show the title message at the end of Reset', function (done) {
+            Processor.processMessage('START TREE', test_number, function (result) {
+                result.action.should.equal('START');
+                Processor.processMessage('RESET', test_number, function (result) {
+                    result.message.should.startWith('Reset was successful.');
+                    result.message.should.endWith(biergarten.text);
+                    result.action.should.equal('tree');
+                    assertHasTreeState(test_syndicate, test_number, biergarten.id, function (state) {
+                        done();
+                    });
+                });
+            });
+        });
+
     });
 
 

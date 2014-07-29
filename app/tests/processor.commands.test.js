@@ -93,6 +93,17 @@ describe('Message Processor Unit Tests:', function() {
                 });
             });
         });
+
+        it('respond with an error if we subscribe to two tree .', function (done) {
+            Processor.processMessage('START TEST', test_number, function () {
+                Processor.processMessage('START TEST', test_number, function (result) {
+                    should.exist(result);
+                    result.message.should.startWith('You are already subscribed');
+                    result.action.should.equal('error');
+                    done();
+                });
+            });
+        });
     });
 
     describe('STOP (unsubscribe) requests', function() {

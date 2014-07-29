@@ -34,6 +34,10 @@ function parseTreeDirective(msg_text, number, callback){
                         if (msg_text === 'BACK') {
                             node = Tree.findParentNode(syndicate.message_tree, subscription.tree_state);
                             rtnMessage = node.text;
+                        } else if (msg_text === 'RESET') {
+                            //reset to the root node.
+                            node  = syndicate.message_tree;
+                            rtnMessage = 'Reset was successful.  '+node.text;
                         } else {
                             //find the user's current node (or the tree root)
                             node = Tree.nodeById(syndicate.message_tree, subscription.tree_state);
@@ -100,36 +104,10 @@ function parseTreeDirective(msg_text, number, callback){
 
 }
 
-function handleReset(number, callback){
-    //remove tree state for all subscriptions.
-    var conditions = {number: number};
-    var update = { $set: { tree_state: ''}};
-    Subscription.update(conditions, update, function (err, count) {
-        if (err){
-            return callback({
-                'action': 'tree',
-                'data': 'reset',
-                'message': 'Reset error: '+err.message
-            });
-        } else {
-            return callback({
-                'action': 'tree',
-                'data': 'reset',
-                'message': 'Reset was successful.'
-            });
-        }
-    });
-}
-
 exports.parseCommand = function(msg_text, number, callback){
     //check for reserved command(s) related to tree.
     var msg = msg_text.trim().toUpperCase();
-    if (msg === 'RESET'){
-        handleReset(number, callback);
-    } else {
-        //"BACK" is handled within this.
-        parseTreeDirective(msg, number, callback);
-    }
+    parseTreeDirective(msg, number, callback);
 };
 
 
