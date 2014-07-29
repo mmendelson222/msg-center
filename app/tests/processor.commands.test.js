@@ -18,14 +18,14 @@ function assertSubscriptionInDB(syndicate, number, shouldExist, shouldBeSubscrib
     Subscription.find({'syndicate':syndicate, 'number':number}, function(err, results){
        (err === null).should.equal(true);
        if (shouldExist){
-           results.length.should.equal(1, 'subscription should exist in database');
+           results.length.should.equal(1, 'subscription '+syndicate+' should exist in database');
            if (shouldBeSubscribed){
-               results[0].active.should.equal(true);
+               results[0].active.should.equal(true, 'subscription '+syndicate+' is in database, but active flag is not set');
            } else {
-               results[0].active.should.equal(false);
+               results[0].active.should.equal(false, 'subscription '+syndicate+' is in database, but active flag is set');
            }
        } else {
-           results.length.should.equal(0, 'subscription should not exist in database');
+           results.length.should.equal(0, 'subscription '+syndicate+' should not exist in database');
            if (shouldBeSubscribed) {
                should.fail('Conflicting test directives (should not exist + should be subscribed)');
            }
@@ -59,13 +59,13 @@ describe('Message Processor Unit Tests:', function() {
         });
 
         user.save(function() {
-            syndicate = new Syndicate({
-                name: 'TEST',
-                user: user
-            });
-            syndicate.save(function(err) {
-                done();
-            });
+            (new Syndicate({name: 'TEST', user: user}).save(function() {
+                (new Syndicate({name: 'TREE1', user: user, message_tree: {id:'root', text:'root'}}).save(function(err) {
+                    (new Syndicate({name: 'TREE2', user: user, message_tree: {id:'root', text:'root'}}).save(function() {
+                        done();
+                    }));
+                }));
+            }));
         });
     });
 
@@ -101,13 +101,16 @@ describe('Message Processor Unit Tests:', function() {
             });
         });
 
-        it('respond with an error if we subscribe to two tree .', function (done) {
-            Processor.processMessage('START TEST', test_number, function () {
-                Processor.processMessage('START TEST', test_number, function (result) {
-                    should.exist(result);
-                    result.message.should.startWith('You are already subscribed');
-                    result.action.should.equal('error');
-                    done();
+        it('respond with an error if we subscribe to two trees', function (done) {
+            Processor.processMessage('START TREE1', test_number, function () {
+                assertSubscriptionInDB('TREE1', test_number, true, true, function () {
+                    Processor.processMessage('START TREE2', test_number, function (result) {
+                        assertSubscriptionInDB('TREE1', test_number,  true, false, function () {
+                            result.message.should.startWith('You are already subscribed');
+                            result.action.should.equal('error');
+                            done();
+                        });
+                    });
                 });
             });
         });
