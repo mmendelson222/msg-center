@@ -14,12 +14,17 @@ var user, syndicate;
 var test_number = '000-000-0000';
 var test_name = 'John Doe X';
 
+var tree1 = {id:'root', text:'welcome to tree 1'};
+var tree2 = {id:'root', text:'welcome to tree 2'};
+
 function assertSubscriptionInDB(syndicate, number, shouldExist, shouldBeSubscribed, done){
     Subscription.find({'syndicate':syndicate, 'number':number}, function(err, results){
        (err === null).should.equal(true);
        if (shouldExist){
+           //console.dir('syndicate ' + syndicate + ' should be subscribed '+ shouldBeSubscribed + ' '  + JSON.stringify(results));
            results.length.should.equal(1, 'subscription '+syndicate+' should exist in database');
            if (shouldBeSubscribed){
+
                results[0].active.should.equal(true, 'subscription '+syndicate+' is in database, but active flag is not set');
            } else {
                results[0].active.should.equal(false, 'subscription '+syndicate+' is in database, but active flag is set');
@@ -60,8 +65,8 @@ describe('Message Processor Unit Tests:', function() {
 
         user.save(function() {
             (new Syndicate({name: 'TEST', user: user}).save(function() {
-                (new Syndicate({name: 'TREE1', user: user, message_tree: {id:'root', text:'root'}}).save(function(err) {
-                    (new Syndicate({name: 'TREE2', user: user, message_tree: {id:'root', text:'root'}}).save(function() {
+                (new Syndicate({name: 'TREE1', user: user, message_tree: tree1}).save(function(err) {
+                    (new Syndicate({name: 'TREE2', user: user, message_tree: tree2}).save(function() {
                         done();
                     }));
                 }));
@@ -101,14 +106,18 @@ describe('Message Processor Unit Tests:', function() {
             });
         });
 
-        it('respond with an error if we subscribe to two trees', function (done) {
+        it('if we subscribe to a second tree, remove the first.', function (done) {
             Processor.processMessage('START TREE1', test_number, function () {
                 assertSubscriptionInDB('TREE1', test_number, true, true, function () {
                     Processor.processMessage('START TREE2', test_number, function (result) {
-                        assertSubscriptionInDB('TREE1', test_number,  true, false, function () {
-                            result.message.should.startWith('You are already subscribed');
-                            result.action.should.equal('error');
-                            done();
+                        //we are now subscribed to TREE2
+                        assertSubscriptionInDB('TREE2', test_number,  true, true, function () {
+                            //but have been unsubscribed from TREE1
+                            assertSubscriptionInDB('TREE1', test_number, true, false, function () {
+                                //just display the normal message for tree 2
+                                result.message.should.startWith(tree2.text);
+                                done();
+                            });
                         });
                     });
                 });

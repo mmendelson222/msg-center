@@ -114,6 +114,10 @@ exports.subscribe = function(syndicateName, number, callback){
                 if (subs.length === 0) {
                     subscription.syndicate = syndicateName;
                     subscription.number = number;
+                    //tree state should not be empty.
+                    if (syndicates[0].message_tree){
+                        subscription.tree_state = syndicates[0].message_tree.id;
+                    }
                     subscription.save(function (err) {
                         if (err) {
                             return callback({
@@ -125,15 +129,46 @@ exports.subscribe = function(syndicateName, number, callback){
                             var syndicate = syndicates[0];
                             var greet;
                             if (syndicate.message_tree) {
-                                greet = syndicate.message_tree.text;
+                                /*Subscription.find({ number: number, active: true, tree_state:{$exists : true}  }, function (err, results) {
+                                        if (err)
+                                            console.dir('error ' + JSON.stringify(err));
+                                        console.dir(JSON.stringify(results));
+                                        greet = syndicate.message_tree.text;
+                                    });*/
+
+
+                                //SET CURRENTLY ACTIVE TREE TO INACTIVE, AND APPEND GREETING MESSAGE
+                               Subscription.update({ number: number, syndicate: {$nin : [syndicateName]}, active: true, tree_state:{$exists : true} },
+                                    { $set: { active: false }},
+                                    { multi: true }, function (err, count, raw) {
+                                        if (err)
+                                            console.dir(JSON.stringify(err));
+                                       //console.dir(JSON.stringify(raw));
+                                       //console.dir(JSON.stringify(syndicate.message_tree));
+                                       if (count === 0){
+                                           greet = syndicate.message_tree.text;
+                                       } else {
+                                           //we could add on a "you have been unsubscribed from xxx" message, but the update request does not determine which one.
+                                           greet = syndicate.message_tree.text;
+                                       }
+
+                                       return callback({
+                                           'action': 'START',
+                                           'data': syndicate,
+                                           'message': greet
+                                       });
+                                   });
+
                             } else {
                                 greet = syndicate.greetings.started.replace('%1', syndicateName);
+
+                                return callback({
+                                    'action': 'START',
+                                    'data': syndicate,
+                                    'message': greet
+                                });
                             }
-                            return callback({
-                                'action': 'START',
-                                'data': syndicate,
-                                'message': greet
-                            });
+
                         }
                     });
                 } else {
