@@ -30,7 +30,7 @@ function assertHasTreeState(syndicate, number, expectedValue, getTreeState){
 /**
  * Unit tests
  */
-describe('Message Tree Processor Unit Tests:', function() {
+describe('Message Tree Processor Unit Tests (processor.tree.test.js):', function() {
 
     describe('Data: tree.sample', function() {
 
@@ -111,7 +111,6 @@ describe('Message Tree Processor Unit Tests:', function() {
                 });
             });
 
-
             it('process a tree request, then a RESET request', function (done) {
                 Processor.processMessage('START TREE', test_number, function (result) {
                     result.action.should.equal('START');
@@ -149,6 +148,20 @@ describe('Message Tree Processor Unit Tests:', function() {
                 });
             });
 
+            it('resets to the root, if next node encountered has no children', function (done) {
+                Processor.processMessage('START TREE', test_number, function (result) {
+                    result.action.should.equal('START');
+                    Processor.processMessage('MAYBE', test_number, function (result) {
+                        assertHasTreeState(test_syndicate, test_number, 'maybeState', function (state) {
+                            Processor.processMessage('NO', test_number, function (result) {
+                                assertHasTreeState(test_syndicate, test_number, 'root', function (state) {
+                                      done();
+                                });
+                            });
+                        });
+                    });
+                });
+            });
 
             //TODO: found that having a subscription which points to a nonexistent syndicate broke tree parsing.  Fixed the issue but maybe should have a test.
         });

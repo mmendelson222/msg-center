@@ -5,7 +5,14 @@
         {
             "id" : "yesState",
             "text": "You chose yes",
-            "match": "yes"
+            "match": "yes",
+            "nodes": [
+                {
+                    "id": "nothing-yes",
+                    "text": "Keeps us from going back to the root after ok.",
+                    "match": ".*"
+                }
+            ]
         },
         {
             "id": "noState",
@@ -20,7 +27,14 @@
                 {
                     "id": "okState",
                     "text": "Good job!",
-                    "match": "ok"
+                    "match": "ok",
+                    "nodes": [
+                        {
+                            "id": "nothing-ok",
+                            "text": "Keeps us from going back to the root after ok.",
+                            "match": ".*"
+                        }
+                    ]
                 },
                 {
                     "id": "blewitState",

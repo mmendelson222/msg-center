@@ -68,6 +68,14 @@ function parseTreeDirective(msg_text, number, callback){
                                 node = nextNode;
                             }
 
+                            //if we're returning a node that has no children, reset to the top!
+                            //this avoids us having to send another message for an error, or for reset.
+                            if (!node.nodes){
+                                //reset to the root node.
+                                node  = syndicate.message_tree;
+                                rtnMessage = rtnMessage + ' -> '+node.text;
+                            }
+
                             //request matched this node.
                             var conditions = {number: number, syndicate: syndicate.name};
                             var update = { $set: { tree_state: node.id}};
