@@ -1,3 +1,12 @@
+# Running msg-center
+This is Michael's pet project and as such, he is the only one who knows what's going on there.  This readme aims to serve as a reminder, 
+as unfortunately he tends to forget details once he has moved onto anther project.  
+
+ On your target server, create the following settings (both are given to a twilio user):
+TWILIO_ACCOUNT_SID="YOUR ID"
+TWILIO_AUTH_TOKEN="YOUR AUTH TOKEN"
+
+
 [![MEAN.JS Logo](http://meanjs.org/img/logo-small.png)](http://meanjs.org/)
 
 [![Build Status](https://travis-ci.org/meanjs/mean.svg?branch=master)](https://travis-ci.org/meanjs/mean)

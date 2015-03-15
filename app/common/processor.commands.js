@@ -7,6 +7,8 @@ var mongoose = require('mongoose'),
     Syndicate = mongoose.model('Syndicate'),
     Subscription = mongoose.model('Subscription');
 
+//first parse layer; look at first command, and see if it matches something.  If it does, process the command.
+//if not, return
 exports.parseCommand = function(msg_text, number, callback){
     var commandDataPair = msg_text.split(/\s(.+)?/);
     commandDataPair[0]=commandDataPair[0].toUpperCase();

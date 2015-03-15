@@ -136,6 +136,7 @@ exports.nodeById = function(tree, id){
     return findNodeById(tree, id);
 };
 
+//choose a matching node under the current node, or return null.
 exports.chooseNext = function(node, userInput){
     if (!node.nodes)
         throw 'You have nowhere to go from here.  Your options are RESET or BACK.';

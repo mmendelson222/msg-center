@@ -23,7 +23,7 @@ function showErrors(errors){
 /**
  * Unit tests
  */
-describe('Message Tree structure tests', function() {
+describe('Message Tree Structure Validation tests', function() {
     beforeEach(function(done) {
         //Initiate the tree.
         //guess we don't need to do this.

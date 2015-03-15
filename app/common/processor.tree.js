@@ -30,7 +30,7 @@ function parseTreeDirective(msg_text, number, callback){
                         var node;
                         var rtnMessage;
 
-                        //use the command to determine the action.
+                        //second-level commands - tree related.
                         if (msg_text === 'BACK') {
                             node = Tree.findParentNode(syndicate.message_tree, subscription.tree_state);
                             rtnMessage = node.text;
@@ -43,14 +43,17 @@ function parseTreeDirective(msg_text, number, callback){
                             node = Tree.nodeById(syndicate.message_tree, subscription.tree_state);
                             //find node based on text
                             var matchedNode = Tree.chooseNext(node, msg_text);
+
                             if (matchedNode) {
                                 rtnMessage = matchedNode.text;
                                 //if below is false, we stay on the parent node (bounceback)
+                                //NOTE: without an ID, we can't stay here!
                                 if (matchedNode.id || matchedNode.next) {
                                     node = matchedNode;
                                 }
+                                //show message and stay (!node.id); is handled below.
                             } else {
-                                //no match
+                                //no match - issue a generic message
                                 node = null;
                             }
                         }
@@ -58,7 +61,7 @@ function parseTreeDirective(msg_text, number, callback){
                         if (node) {
                             treeSuccess = true;
                             //handle cases here:
-                            //show message and stay (!node.id);
+
                             //use message from current node but navigate to new node (action=usenodes)
                             while (node.next)  {
                                 var nextNode = Tree.nodeById(syndicate.message_tree, node.next);
