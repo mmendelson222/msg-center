@@ -1,4 +1,4 @@
-# Message Center
+# Message Center 
 This project, based on the MEAN stack, is designed to process text messages using a tree based structure of prompts and actions.
 
 A basic MEAN UI allows an administrator to create mutliple trees.  New users subscribe to trees using top level commands:
@@ -13,7 +13,7 @@ from amongst the current node's child nodes.   Then the following may occur:
 ** stay on parent node (no ID) - e.g. "try again"
 * No match - action TBD.
 * If next property of a new child node is set, advance to the named node.  Child node and secondary child node's text both appear in message.
-** If next property is accompanied by action: "usenodes", do not include the text from the secondary child node. 
+** If next property is accompanied by action: "usenodes", do not include the text from the secondary child node.
 
 # Development Setup
  On your target server, create the following settings (both are given to a twilio user):
