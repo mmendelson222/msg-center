@@ -1,11 +1,26 @@
-# Running msg-center
-This is Michael's pet project and as such, he is the only one who knows what's going on there.  This readme aims to serve as a reminder, 
-as unfortunately he tends to forget details once he has moved onto anther project.  
+# Message Center
+This project, based on the MEAN stack, is designed to process text messages using a tree based structure of prompts and actions.
 
+A basic MEAN UI allows an administrator to create mutliple trees.  New users subscribe to trees using top level commands:
+* START <treename> - subscribe to a tree
+* START <treename> - unsubscribe to a tree
+* NAME <user name> - specify user name for greeting purposes only.
+
+Once subscribed, the user arrives at the root node of the tree.  At each node, the user receives the prompt specified in the text property.  Upon entering another command, a matching node is sought
+from amongst the current node's child nodes.   Then the following may occur:
+* Match occurs (user receives new child node message)
+** advance to the child node
+** stay on parent node (no ID) - e.g. "try again"
+* No match - action TBD.
+* If next property of a new child node is set, advance to the named node.  Child node and secondary child node's text both appear in message.
+** If next property is accompanied by action: "usenodes", do not include the text from the secondary child node. 
+
+# Development Setup
  On your target server, create the following settings (both are given to a twilio user):
 TWILIO_ACCOUNT_SID="YOUR ID"
 TWILIO_AUTH_TOKEN="YOUR AUTH TOKEN"
 
+#MEAN Readme
 
 [![MEAN.JS Logo](http://meanjs.org/img/logo-small.png)](http://meanjs.org/)
 
